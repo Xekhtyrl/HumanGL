@@ -1,7 +1,7 @@
 #include "Includes/header.h"
 #include "Includes/vml.hpp"
 #include "Camera.hpp"
-#include "Model.hpp"
+#include "HierarchicModel.hpp"
 
 #include "Includes/imgui/imgui.h"
 #include "Includes/imgui/imgui_impl_glfw.h"

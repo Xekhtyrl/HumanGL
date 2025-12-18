@@ -12,7 +12,6 @@
 void strTrim(std::string& str, std::string arr = " \t\r\n");
 std::string fileToStr(std::string filePath);
 
-#include "../Texture.hpp"
 #include "struct.hpp"
 #include "../Shader.hpp"
 
@@ -26,7 +25,7 @@ extern float deltaTime;
 #include "../Camera.hpp"
 extern Camera camera;
 #include "../Mesh.hpp"
-#include "../Model.hpp"
+#include "../HierarchicModel.hpp"
 
 class Model;
 extern Model object;

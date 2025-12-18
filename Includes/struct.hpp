@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../Texture.hpp"
 #include "vml.hpp"
 
 using namespace vml;
@@ -29,9 +28,6 @@ struct Material {
     std::string mapKsPath; // specular texture
     std::string mapBumpPath; // normal/bump map
 
-    Texture diffuseTex;
-    Texture specularTex;
-    Texture normalTex;
 };
 
 struct Setup {
@@ -42,8 +38,6 @@ struct Setup {
 	bool showColors = false;
 	bool showPoints = false;
 	std::string		modelName;
-
-	Texture custom;
 
 	//Light params
 	vec3 lightPos{0., 0., 1.};
