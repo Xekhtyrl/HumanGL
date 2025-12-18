@@ -15,6 +15,7 @@ class HierarchicModel : public IModel{
 
 	private:
 		
+		
 };
 
 #endif // HIERARCHICMODEL_HPP_
