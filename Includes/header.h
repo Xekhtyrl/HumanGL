@@ -7,10 +7,12 @@
 #include <vector>
 #include <cmath>
 #include <vml.hpp>
+#include <boost/json.hpp>
 
 //utils.cpp
 void strTrim(std::string& str, std::string arr = " \t\r\n");
-std::string fileToStr(std::string filePath);
+std::string fileToStr(const std::string& filePath);
+boost::json::value parseJsonFile(const std::string& path);
 
 #include "struct.hpp"
 #include "../Shader.hpp"

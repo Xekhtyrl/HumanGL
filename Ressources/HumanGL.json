@@ -1,0 +1,36 @@
+{
+	"torso": {
+		"children": ["head", "upperArm_L", "upperArm_R", "thight_R", "thight_L"]
+	},
+	"upperArm_L": {
+		"children": ["arm_L"],
+		"pivot": [-0.25, 0.5, 0]
+	},
+	"upperArm_R": {
+		"children": ["arm_R"],
+		"pivot": [0.25, 0.5, 0]
+	},
+	"tight_R": {
+		"children": ["leg_R"],
+		"pivot": [0.13,-0.5,0]
+	},
+	"tight_L": {
+		"children": ["leg_L"],
+		"pivot": [-0.13,-0.5,0]
+	},
+	"head": {
+		"pivot": [0,0.5,0]
+	},
+	"arm_L": {
+		"pivot": [-0.35,0.2,0]
+	},
+	"arm_R": {
+		"pivot": [0.35,0.2,0]
+	},
+	"leg_L": {
+		"pivot": [-0.13,-1,0]
+	},
+	"leg_R": {
+		"pivot": [0.13,-1,0]
+	}
+}
