@@ -19,11 +19,10 @@ SRCS =	main.cpp \
 		Controls.cpp \
 		utils.cpp \
 		Shader.cpp \
-		Texture.cpp \
 		stb_image.cpp \
 		window.cpp \
 		modelMatrices.cpp \
-		Model.cpp \
+		HierarchicModel.cpp \
 		ModelLoadObj.cpp \
 		Mesh.cpp \
 		$(IMGUI_SRCS)

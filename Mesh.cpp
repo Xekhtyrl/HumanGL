@@ -30,7 +30,8 @@ Mesh& Mesh::operator=(const Mesh& oth) {
 /// @brief draw function that check viewmode to adapt, set textures and other values and send it to the shader (fragment shader mostly)
 /// @param shader program shader linked to the model
 /// @param material structure linked to the Mesh that contain the details from the mtl
-void Mesh::Draw(Shader &shader, Material material) {
+void Mesh::Draw(Shader &shader, Material material, mat4 transform, vec3 pivot) {
+	(void)pivot;
 	shader.use();
 	glBindVertexArray(_VAO);
 	if (setup.showLines){
@@ -44,39 +45,14 @@ void Mesh::Draw(Shader &shader, Material material) {
 	else
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-	// custom or diffuse
-	if (setup.applyCustomTexture && setup.custom.id()){
-		glActiveTexture(GL_TEXTURE0);
-		shader.setInt("customTex", 0);
-		glBindTexture(GL_TEXTURE_2D,setup.custom.id());
-	}
-	else if (material.diffuseTex.id() != 0) {
-		glActiveTexture(GL_TEXTURE1);
-		shader.setInt("material.diffuse", 1);
-		glBindTexture(GL_TEXTURE_2D, material.diffuseTex.id());
-	}
-
-	// specular
-	if (material.specularTex.id() != 0) {
-		glActiveTexture(GL_TEXTURE2);
-		shader.setInt("material.specular", 2);
-		glBindTexture(GL_TEXTURE_2D, material.specularTex.id());
-	}
-
-	// normal
-	if (material.normalTex.id() != 0) {
-		glActiveTexture(GL_TEXTURE3);
-		shader.setInt("material.normalMap", 3);
-		glBindTexture(GL_TEXTURE_2D, material.normalTex.id());
-	}
+	
 
 	// booleans
 	shader.setBool("showFaces", setup.showFaces);
 	shader.setBool("changeColor", setup.showColors);
-	shader.setBool("useCustomTex", setup.applyCustomTexture && setup.custom.id() != 0);
-	shader.setBool("useDiffuseMap",  material.diffuseTex.id()  != 0);
-	shader.setBool("useSpecularMap", material.specularTex.id() != 0);
-	shader.setBool("useNormalMap",   material.normalTex.id()   != 0);
+	shader.setBool("useCustomTex", 0);
+
+	shader.setMat("transform", transform.data);
 
 	// scalar uniforms
 	shader.setVec3("material.ambient",        material.ambient);
@@ -144,24 +120,27 @@ void Mesh::setupMesh(vec3 min, vec3 size) {
 
 //getters
 std::vector<Vertex>& Mesh::vertices() {return _vertices;}
-std::vector<Vertex> Mesh::vertices() const {return _vertices;}
+const std::vector<Vertex>& Mesh::vertices() const {return _vertices;}
 std::vector<unsigned int>& Mesh::indices() {return _indices;}
-std::vector<unsigned int> Mesh::indices() const {return _indices;}
+const std::vector<unsigned int>& Mesh::indices() const {return _indices;}
 std::string Mesh::materialName() const {return _materialName;}
 std::string Mesh::name() const {return _name;}
 GLuint& Mesh::VAO() {return _VAO;}
-GLuint& Mesh::VBO() {return _VAO;}
-GLuint& Mesh::EBO() {return _VAO;}
-bool Mesh::vnPresent() {return _vnPresent;};
-bool Mesh::vtPresent() {return _vtPresent;};
+GLuint& Mesh::VBO() {return _VBO;}
+GLuint& Mesh::EBO() {return _EBO;}
+const GLuint& Mesh::VAO() const { return _VAO; }
+const GLuint& Mesh::VBO() const { return _VBO; }
+const GLuint& Mesh::EBO() const { return _EBO; }
+bool Mesh::vnPresent() const {return _vnPresent;}
+bool Mesh::vtPresent() const {return _vtPresent;}
 
 //setters
 void Mesh::vertices(std::vector<Vertex>& vertices) {_vertices = vertices;}
 void Mesh::indices(std::vector<unsigned int>& idxs) {_indices = idxs;}
 void Mesh::materialName(std::string matName) {_materialName = matName;}
 void Mesh::name(std::string name) {_name = name;}
-void Mesh::vnPresent(bool present) {_vnPresent = present;};
-void Mesh::vtPresent(bool present) {_vtPresent = present;};
+void Mesh::vnPresent(bool present) {_vnPresent = present;}
+void Mesh::vtPresent(bool present) {_vtPresent = present;}
 
 /**
  * @brief Generates UVs (Texture Coordonate) using cubic projection based on the dominant normal axis.

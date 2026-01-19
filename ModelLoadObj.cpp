@@ -1,11 +1,5 @@
 #include "HierarchicModel.hpp"
 
-
-#include <boost/json/src.hpp>
-
-
-
-
 /// @brief Utilitary function that parse face point line and split in the three variable
 /// @param token face point line with 1 to 3 values
 /// @param vId reference to the vertex position index for the current face point 
@@ -52,11 +46,15 @@ inline int objIndexToZeroBased(int id, size_t size) {
 /// @param prevMat previous Material Name in case no material where used/set here
 /// @param cache hash map of the vertices hashes to clear in  case of reset 
 /// @param reset bollean value to set to true if Mesh need to be cleared
-void HierarchicModel::finishAndResetMesh(Mesh& currentMesh, std::string prevMat, std::unordered_map<VertexKey, unsigned int, VertexKeyHash>& cache, bool reset, MNode* Node) {
+void HierarchicModel::finishAndResetMesh(Mesh& currentMesh, std::string prevMat, std::unordered_map<VertexKey, unsigned int, VertexKeyHash>& cache, bool reset) {
 	if (!currentMesh.vertices().empty()) {
-		if (currentMesh.materialName().empty()) currentMesh.materialName(prevMat);
+		if (currentMesh.materialName().empty())
+			currentMesh.materialName(prevMat);
 		currentMesh.setupMesh(_min, _max - _min);
-		Node->mesh = new Mesh(currentMesh);
+		if (model.nodes.count(currentMesh.name()) == 0){
+			throw std::runtime_error("Error Model Creation: Mesh Name does not match any node name");
+		}
+		model.nodes[currentMesh.name()]->mesh = new Mesh(currentMesh);
 		if (reset){
 			currentMesh = Mesh();
 			cache.clear();
@@ -198,13 +196,7 @@ void HierarchicModel::loadModel(std::string path) {
 			temp_vn.push_back({x,y,z});
 		}
 		else if (type == "f") {
-			try {
-				if (!faceLineParse(ss, temp_v, temp_vt, temp_vn, currentMesh, cache))
-					continue;
-			}
-			catch (std::exception&e) {
-				throw;
-			}
+			faceLineParse(ss, temp_v, temp_vt, temp_vn, currentMesh, cache);
 		}
 		else if (type == "g") {
 			finishAndResetMesh(currentMesh, prevMat, cache, true);
@@ -218,6 +210,12 @@ void HierarchicModel::loadModel(std::string path) {
 		else if (type == "usemtl") {
 			usemtl(ss, currentMesh, prevMat, cache);
 		}
+		else if (type == "skeleton") {
+			std::string sklpath;
+			ss >> sklpath;
+			convertMtlPath(sklpath);
+			loadSkeleton(sklpath);
+		}
 		else if (type == "mtllib") {
 			std::string mtlpath;
 			ss >> mtlpath;
@@ -230,15 +228,87 @@ void HierarchicModel::loadModel(std::string path) {
 
 	file.close();
 }
-void test(Mesh& mesh)
-{
-	MNode * model;
-	std::string type;
-	
-	model = new MNode;
-	model->mesh = new Mesh(mesh);
-	if (type == "g") {
-		model->children.push_back(new MNode);
-		CreateNode()
+
+void HierarchicModel::printGraph(MStruct& obj, MNode *node) {
+	std::cout << node->name << std::endl;
+	std::cout << "\tpivot: " << node->pivot << std::endl;;
+	if (node->children.size()) {
+		std::cout << "\tchildren: ";
+		for (auto& x: node->children)
+			std::cout << x << " ";
+		std::cout << std::endl;
+		for (auto& x: node->children)
+			printGraph(obj, obj.nodes[x]);
 	}
+}
+
+void HierarchicModel::checkLink(MStruct& final, MNode* node, std::deque<std::string> visited) {
+	if (std::find(visited.begin(), visited.end(), node->name) != visited.end())
+		throw std::runtime_error("Error: skeleton file >> loop in model");
+	visited.emplace_front(node->name);
+	if (node->children.size()){
+		for (auto& x: node->children)
+			if (std::find(final.order.begin(), final.order.end(), x) == final.order.end())
+				throw std::runtime_error("Error: skeleton file >> child nonexistent");
+		for (auto& x: node->children){
+			checkLink(final, final.nodes[x], visited);
+		}
+	}
+}
+
+void HierarchicModel::loadSkeleton(const std::string& path) {
+	MNode *obj;
+	std::string line;
+	std::ifstream file(directory + path);
+	if (!file.is_open())
+		throw std::runtime_error("Error: Could not open " + path);	
+
+	while (getline(file, line)) {
+		std::stringstream ss(line);
+		std::string type;
+
+		ss >> type;
+
+		if ((type.find('{') != std::string::npos || type.find('}') != std::string::npos) && type.size() < 3)
+			continue;
+		// std::cout << type << std::endl;
+		if (type.find("pivot") != std::string::npos){
+			    // Skip until '['
+			ss.ignore(std::numeric_limits<std::streamsize>::max(), '[');
+
+			// Read numbers
+			ss >> obj->pivot[0];
+			ss.ignore(1); // skip ','
+			ss >> obj->pivot[1];
+			ss.ignore(1); // skip ','
+			ss >> obj->pivot[2];
+
+			// std::cout << obj->pivot[0] << " "
+			// 		<< obj->pivot[1] << " "
+			// 		<< obj->pivot[2] << "\n";
+		}
+		else if (type.find("children") != std::string::npos) {
+			std::string val;
+			std::string prev = type;
+			std::vector<std::string> arr;
+
+			ss.ignore(std::numeric_limits<std::streamsize>::max(), '[');
+			while (ss >> val) {
+				// prev = val;
+				
+				strTrim(val, ":,[]\"");
+				ss.ignore(1);
+				arr.push_back(val);
+			}
+			obj->children = arr;
+		}
+		else {
+			strTrim(type, ":\"");
+			obj = new MNode(type);
+			model.order.push_back(type);
+			model.nodes[type] = obj;
+		}
+	}
+	checkLink(model, model.nodes[model.order[0]], std::deque<std::string>());
+	// printGraph(final, final.nodes[final.order[0]]);
 }

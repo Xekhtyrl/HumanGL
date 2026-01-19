@@ -6,16 +6,19 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
-#include <vml.hpp>
-#include <boost/json.hpp>
+#include "vml.hpp"
+
+// namespace json = boost::json;
 
 //utils.cpp
 void strTrim(std::string& str, std::string arr = " \t\r\n");
 std::string fileToStr(const std::string& filePath);
-boost::json::value parseJsonFile(const std::string& path);
+// json::value parseJsonFile(const std::string& path);
 
 #include "struct.hpp"
 #include "../Shader.hpp"
+
+class Shader;
 
 extern Setup setup;
 extern const unsigned int SCR_WIDTH;
@@ -27,29 +30,31 @@ extern float deltaTime;
 #include "../Camera.hpp"
 extern Camera camera;
 #include "../Mesh.hpp"
+
+class Mesh;
+
+#include "../IModel.hpp"
+
+class IModel;
+
 #include "../HierarchicModel.hpp"
 
-class Model;
-extern Model object;
 
 extern vml::mat4 model;
 extern vml::vec3 center;
 
-// #include <globals.hpp>
-
-
 #include "../Camera.hpp"
 //modelMatrices.cpp
-void setBaseModelMatrix(GLFWwindow *window);
+void setBaseModelMatrix(GLFWwindow *window, IModel* object);
 void defineMatrices(Shader& shad);
 
 //controls.cpp
-void scaleAndResetKey(GLFWwindow *window);
+void scaleAndResetKey(GLFWwindow *window, IModel* object);
 void rotationKey(GLFWwindow *window);
 void translationKey(GLFWwindow *window);
 void changeSetup(GLFWwindow *window, int key, int action);
 void changeLightSettings(GLFWwindow *window);
-void processInput(GLFWwindow *window);
+void processInput(GLFWwindow *window, IModel* object);
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void setup_callback(GLFWwindow* window, int key, int scancode, int action, int mods);

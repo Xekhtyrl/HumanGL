@@ -15,15 +15,17 @@ flat out int TriID;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform mat4 transform;
 
 void main()
 {
     // World position of the vertex
-    vec4 worldPos = model * vec4(aPos, 1.0);
+	mat4 transfomedModel = model * transform;
+    vec4 worldPos = transfomedModel * vec4(aPos, 1.0);
     FragPos = worldPos.xyz;
 
     // Normal in world space
-    Normal = mat3(transpose(inverse(model))) * aNormal;
+    Normal = mat3(transpose(inverse(transfomedModel))) * aNormal;
 
     // Texture coordinates
     TexCoords = aTexCoord;
@@ -31,8 +33,8 @@ void main()
 	TriID = aTriID;
 
     // Compute TBN matrix (only used if you have tangents & bitangents)
-    // vec3 T = normalize(mat3(model) * aTangent);
-    // vec3 B = normalize(mat3(model) * aBitangent);
+    // vec3 T = normalize(mat3(transfomedModel) * aTangent);
+    // vec3 B = normalize(mat3(transfomedModel) * aBitangent);
     // vec3 N = normalize(Normal);
     // TBN = mat3(T, B, N);
 

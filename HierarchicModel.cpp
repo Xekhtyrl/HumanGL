@@ -2,12 +2,12 @@
 
 
 /// @brief default constructor
-Model::Model() {}
+HierarchicModel::HierarchicModel() {}
 
 /// @brief custom cronstructor that load an object into the Model and devide them in meshes and materials
 /// @param path argument given to the program as the path the .obj
 /// @throw any exception caught by the loadModel function
-Model::Model(char *path)
+HierarchicModel::HierarchicModel(std::string path)
 {
 	try {
 		loadModel(path);
@@ -20,9 +20,9 @@ Model::Model(char *path)
 /// @brief copy assignement overload constructor
 /// @param oth Model to copy
 /// @return new model
-Model& Model::operator=(const Model& oth) {
+HierarchicModel& HierarchicModel::operator=(const HierarchicModel& oth) {
 	if (this != &oth) {
-		meshes = oth.meshes;
+		model = oth.model;
 		materials = oth.materials;
 		directory = oth.directory;
 		_name = oth._name;
@@ -34,57 +34,59 @@ Model& Model::operator=(const Model& oth) {
 }
 
 /// @brief Model destructor: destroy and clean all thing related to the Model (Textures, Mehes's VAO, VBO, EBO)
-Model::~Model() {
+HierarchicModel::~HierarchicModel() {
 	if (!final)
 		return ;
-	for (auto& it: materials){
-		auto& mat = it.second;
-		if (mat.diffuseTex.id() != 0)
-			mat.diffuseTex.deleteTex();
-		if (mat.specularTex.id() != 0)
-			mat.specularTex.deleteTex();
-		if (mat.normalTex.id() != 0)
-			mat.normalTex.deleteTex();
+	// for (auto& it: materials){
+	// 	auto& mat = it.second;
+	// 	if (mat.diffuseTex.id() != 0)
+	// 		mat.diffuseTex.deleteTex();
+	// 	if (mat.specularTex.id() != 0)
+	// 		mat.specularTex.deleteTex();
+	// 	if (mat.normalTex.id() != 0)
+	// 		mat.normalTex.deleteTex();
+	// }
+	for (auto& [key, node]: model.nodes) {
+		Mesh *mesh = node->mesh;
+		if (mesh->VAO())
+			glDeleteVertexArrays(1, &(mesh->VAO()));
+		if (mesh->VBO())
+			glDeleteBuffers(1, &(mesh->VBO()));
+		if (mesh->EBO())
+			glDeleteBuffers(1, &(mesh->EBO()));
 	}
-	for (auto& mesh: meshes) {
-		if (mesh.VAO())
-			glDeleteVertexArrays(1, &(mesh.VAO()));
-		if (mesh.VBO())
-			glDeleteBuffers(1, &(mesh.VBO()));
-		if (mesh.EBO())
-			glDeleteBuffers(1, &(mesh.EBO()));
-	}
-	if (setup.custom.id())
-		setup.custom.deleteTex();
 }
 
 /// @brief Model Draw function that call each Mesh Draw function with the shader program needed for it
 /// @param shader shader program class
-void Model::Draw(Shader &shader) {
-	for (Mesh& x : meshes)
-		x.Draw(shader, materials[x.materialName()]);
+void HierarchicModel::Draw(Shader &shader) {
+	for (auto& [key, node]: model.nodes) {
+		Mesh *mesh = node->mesh;
+		mesh->Draw(shader, materials[mesh->materialName()], node->localTransform, node->pivot);
+	}
 }
 
 //getters
 /// @brief debug function to get each Mesh's Material Name
-void Model::printMeshMatNames() {
-	for (auto& x : meshes)
-		std::cout << x.materialName() <<std::endl;
+void HierarchicModel::printMeshMatNames() {
+	for (auto& [key, node]: model.nodes) {
+		Mesh *mesh = node->mesh;
+		std::cout << mesh->materialName() <<std::endl;
+	}
 }
 
 /// @brief debug function to get the number of Meshes in the Model
 /// @return number of Mesh in Model
-size_t Model::ms() {return meshes.size();}
-std::vector<Mesh> Model::getMeshes() {return meshes;}
-vec3 Model::min() {return _min;}
-vec3 Model::max() {return _max;}
+size_t HierarchicModel::ms() {return model.order.size();}
+vec3 HierarchicModel::min() {return _min;}
+vec3 HierarchicModel::max() {return _max;}
 
 
 /// @brief check new values and (re)define min and max value if needed 
 /// @param x x value to compare with previous values
 /// @param y y value to compare with previous values
 /// @param z z value to compare with previous values
-void Model::defineMinMax(float x, float y, float z) {
+void HierarchicModel::defineMinMax(float x, float y, float z) {
 	_min[0] = std::min(_min[0], x);
 	_min[1] = std::min(_min[1], y);
 	_min[2] = std::min(_min[2], z);
@@ -97,7 +99,7 @@ void Model::defineMinMax(float x, float y, float z) {
 /// @brief function called by loadModel when mtllib is found in the .obj to create all Materials needed and stock them in the materials map
 /// @param path to the .mtl file
 /// @throw an exception if the file could not be opened
-void Model::loadMtl(std::string path) {
+void HierarchicModel::loadMtl(std::string path) {
 	std::ifstream file(directory + path);
 	if (!file.is_open())
 		throw std::runtime_error("Error: Material File could not be opened or does not exist.");
@@ -145,21 +147,21 @@ void Model::loadMtl(std::string path) {
 	file.close();
 
 	// Load textures
-	for (auto& it : materials) {
-		auto& mat  = it.second;
-		if (!mat.mapKdPath.empty())
-			mat.diffuseTex.loadTexture(directory + "/" + mat.mapKdPath.c_str());
-		if (!mat.mapKsPath.empty())
-			mat.specularTex.loadTexture(directory + "/" + mat.mapKsPath.c_str());
-		if (!mat.mapBumpPath.empty())
-			mat.normalTex.loadTexture(directory + "/" + mat.mapBumpPath.c_str());
-	}
+	// for (auto& it : materials) {
+	// 	auto& mat  = it.second;
+	// 	if (!mat.mapKdPath.empty())
+	// 		mat.diffuseTex.loadTexture(directory + "/" + mat.mapKdPath.c_str());
+	// 	if (!mat.mapKsPath.empty())
+	// 		mat.specularTex.loadTexture(directory + "/" + mat.mapKsPath.c_str());
+	// 	if (!mat.mapBumpPath.empty())
+	// 		mat.normalTex.loadTexture(directory + "/" + mat.mapBumpPath.c_str());
+	// }
 }
 
 /// @brief utilitary function  that check if the file is a .obj and is longer that 4 (no ".obj" file only)
 /// @param path the .obj file path
 /// @return true if valid file
-bool Model::validObjPath(std::string path) {
+bool HierarchicModel::validObjPath(std::string path) {
 	if (path.find(".obj", path.size() - 5) > path.size()){
 		return false;
 	}
@@ -171,7 +173,7 @@ bool Model::validObjPath(std::string path) {
 
 /// @brief utilitary function that parse the mtl file to fit
 /// @param mtlpath .mtl file path given by the .obj
-void Model::convertMtlPath(std::string& mtlpath) {
+void HierarchicModel::convertMtlPath(std::string& mtlpath) {
 	if (mtlpath[0] == '.')
 		strTrim(mtlpath, ".");
 	if (mtlpath[0] != '/')

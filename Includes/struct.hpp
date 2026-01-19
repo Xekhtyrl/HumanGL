@@ -1,10 +1,10 @@
 #pragma once
 
 #include <vector>
+#include <deque>
+#include <map>
 
 #include "vml.hpp"
-#include "../Mesh.hpp"
-
 
 using namespace vml;
 
@@ -51,8 +51,3 @@ struct Setup {
 	float scaleFactor = 1;
 };
 
-struct ModelNode {
-	mat4 localTranform;
-	Mesh* mesh;
-	std::vector<ModelNode*> children;
-} typedef MNode;

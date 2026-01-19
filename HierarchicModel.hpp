@@ -1,16 +1,15 @@
 #pragma once
 #include <vector>
 #include <iostream>
-#include "header.h"
-#include "Shader.hpp"
-#include "Mesh.hpp"
-#include "Includes/vml.hpp"
-#include "Includes/struct.hpp"
 #include <unordered_map>
 #include <limits>
 #include <algorithm>
+#include "header.h"
+// #include "Shader.hpp"
+// #include "Mesh.hpp"
+// #include "Includes/vml.hpp"
+// #include "Includes/struct.hpp"
 #include "IModel.hpp"
-#include "struct.hpp"
 
 
 using namespace vml;
@@ -31,12 +30,33 @@ struct VertexKeyHash {
     }
 };
 
+struct ModelNode {
+	std::string name;
+	mat4 localTransform = vml::identity<float, 4>();
+	Mesh* mesh;
+	std::vector<std::string> children;
+	vec3 pivot = {0,0,0};
+
+	ModelNode() {};
+	ModelNode(const std::string _name) : name(_name) {}
+} typedef MNode;
+
+struct ModelStruct {
+	std::map<std::string, MNode *> nodes;
+	std::vector<std::string> order;
+	// might be moved to model destructor for safety
+	~ModelStruct() {
+		for(auto& [key, value]: nodes)
+			delete value;
+	}
+} typedef MStruct;
+
 class HierarchicModel : public IModel
 {
 	public:
 		//constructors and destructors
 		HierarchicModel();
-		HierarchicModel(char *path);
+		HierarchicModel(std::string path);
 		HierarchicModel& operator=(const HierarchicModel& oth);
 		~HierarchicModel();
 
@@ -46,12 +66,11 @@ class HierarchicModel : public IModel
 		void printMeshMatNames();
 		//getters
 		size_t ms();
-		std::vector<Mesh> getMeshes();
 		vec3 min();
 		vec3 max();
 	private:
 		// model data
-		MNode *model;
+		MStruct model;
 		std::unordered_map<std::string, Material> materials;
 		std::string directory;
 		std::string _name;
@@ -68,10 +87,13 @@ class HierarchicModel : public IModel
 
 		//in ModelLoadObj.cpp
 		void	loadModel(std::string path);
+		void	printGraph(MStruct& obj, MNode *node);
+		void	checkLink(MStruct& final, MNode* node, std::deque<std::string> visited);
+		void	loadSkeleton(const std::string& path);
 		
 		//loadObj sub functions
 		int		faceLineParse(std::stringstream& ss, std::vector<vec3>& temp_v, std::vector<vec2>& temp_vt,
 					std::vector<vec3>& temp_vn, Mesh& currentMesh, std::unordered_map<VertexKey, unsigned int, VertexKeyHash>& cache);
 		void	usemtl(std::stringstream& ss, Mesh& currentMesh, std::string& prevMat, std::unordered_map<VertexKey, unsigned int, VertexKeyHash>& cache);
-		void	finishAndResetMesh(Mesh& currentMesh, std::string prevMat, std::unordered_map<VertexKey, unsigned int, VertexKeyHash>& cache, bool reset, MNode* Node);
+		void	finishAndResetMesh(Mesh& currentMesh, std::string prevMat, std::unordered_map<VertexKey, unsigned int, VertexKeyHash>& cache, bool reset);
 };

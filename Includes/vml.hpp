@@ -482,3 +482,14 @@ namespace vml {
 		});
 	}
 }
+template <typename T, size_t N>
+std::ostream& operator<<(std::ostream& out, vml::Vector<T, N>& vec) {
+	out<< "[";
+	for (size_t i = 0; i < N; i++) {
+		out << vec[i];
+		if (i < N - 1)
+			out << ", ";
+	}
+	out<< "]" <<std::endl;
+	return out;
+}

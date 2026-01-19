@@ -2,3 +2,5 @@
 .vscode
 *workspace
 .git
+*.out
+HumanGL

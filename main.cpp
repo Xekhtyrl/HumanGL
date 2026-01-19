@@ -17,7 +17,6 @@ float lastFrame = 0.0f; // Time of last frame
 float lastX =  SCR_WIDTH / 2.0;
 float lastY =  SCR_HEIGHT / 2.0;
 Camera camera(vec3({0.,0.,3.}));
-Model object;
 mat4 model;
 Setup setup = Setup();
 vec3 center;
@@ -41,21 +40,21 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
  * @param window glfw window pointer.
  * @param shader shader class needed beforehand to draw the meshes with and send update to the program on the model.
  */
-void renderLoop(GLFWwindow *window, Shader& shader) {
+void renderLoop(GLFWwindow *window, Shader& shader, IModel* object) {
 	
 	while(!glfwWindowShouldClose(window))
 	{
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame; 
-		processInput(window);
+		processInput(window, object);
 		// Set the clear color (RGBA)
 		glClearColor(0.75, 0.75f, 0.6f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		shader.use();
 		defineMatrices(shader);
 		
-		object.Draw(shader);
+		object->Draw(shader);
 		
 		createUIImgui();
 		glfwSwapBuffers(window);
@@ -111,8 +110,14 @@ void setObjName(std::string arg) {
 	setup.modelName = arg.substr(arg.find_last_of('/') + 1);
 }
 
-int main()
+int main(int argc, char **argv)
 {
+	std::string obj;
+	if (argc == 2)
+		obj = argv[1];
+	else
+		obj = "Ressources/HumanGL.obj";
+	setObjName(obj);
 	std::ofstream log;
 	log.open("err.log");
 	GLFWwindow* window = initWindow(setup.modelName);
@@ -139,15 +144,14 @@ int main()
 		log << "Glad loaded successfully" << std::endl;
 		setupOpenGL(window);
 		log << "OpenGL setuped" << std::endl;
-		log << "Custom Texture " <<  setup.custom.path() << " Loaded Successfully" << std::endl;
 
 		Shader shad("ShadersFiles/FinalVertexTexShad.glsl", "ShadersFiles/FinalFragTexShad.glsl");
 		log << "Shader created Successfully" << std::endl;
 		// Create Model here
-		// object = Model();
+		IModel *object = new HierarchicModel(obj.c_str());
 		log << "Kodel created Successfully" << std::endl;
-		setBaseModelMatrix(window);
-		renderLoop(window, shad);
+		setBaseModelMatrix(window, object);
+		renderLoop(window, shad, object);
 	}
 	catch(std::exception& e){
 		log << "Exception catched: " << e.what() << std::endl;

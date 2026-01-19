@@ -5,11 +5,11 @@
  * @brief set model matrix to resize and recenter the model base to fit correctly
  * @param window glfw window pointer
  */
-void setBaseModelMatrix(GLFWwindow* window) {
+void setBaseModelMatrix(GLFWwindow* window, IModel* object) {
 	model = identity<float,4>();
 
-	vec3 rawMin = object.min();
-	vec3 rawMax = object.max();
+	vec3 rawMin = object->min();
+	vec3 rawMax = object->max();
 
 	vec3 rawCenter = (rawMin + rawMax) * 0.5f;
 	vec3 rawSize = rawMax - rawMin;

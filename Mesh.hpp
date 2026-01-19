@@ -3,10 +3,10 @@
 #include <iostream>
 #include <algorithm>
 
-#include "Shader.hpp"
 #include "Includes/vml.hpp"
+#include "Shader.hpp"
 #include "Includes/struct.hpp"
-#include <header.h>
+#include "Includes/header.h"
 
 class Shader;
 
@@ -16,21 +16,24 @@ class Mesh {
 		Mesh(const Mesh& oth);
         Mesh& operator=(const Mesh& oth);
 
-		void Draw(Shader &shader, Material material);
+		void Draw(Shader &shader, Material material, mat4 transfrom, vec3 pivot);
 		void setupMesh(vec3 min, vec3 size);
 
 		//getters
         std::vector<Vertex>& vertices();
-        std::vector<Vertex> vertices() const;
+        const std::vector<Vertex>& vertices() const;
         std::vector<unsigned int>& indices();
-        std::vector<unsigned int> indices() const;
+        const std::vector<unsigned int>& indices() const;
         std::string materialName() const;
         std::string name() const;
 		GLuint& VAO();
 		GLuint& VBO();
 		GLuint& EBO();
-		bool vnPresent();
-		bool vtPresent();
+		const GLuint& VAO() const;
+		const GLuint& VBO() const;
+		const GLuint& EBO() const;
+		bool vnPresent() const;
+		bool vtPresent() const;
 
 		//setters
         void vertices(std::vector<Vertex>& vertices);
