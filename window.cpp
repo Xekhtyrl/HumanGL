@@ -45,9 +45,11 @@ void createUIImgui(){
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
-
+	
+	// ImGui::SetNextWindowSize(ImVec2(SCR_WIDTH / 5, 0), ImGuiCond_Always);
+	// ImGui::GetStyle().FontScaleMain = 0.8f;
 	ImGui::Begin("Settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-
+	
 	ImGui::SliderFloat("Scale", &setup.scaleFactor, 0.1f, 10.0f);
 	ImGui::Checkbox("Show Faces (F)", &setup.showFaces);
 	ImGui::Checkbox("Show Lines (L)", &setup.showLines);

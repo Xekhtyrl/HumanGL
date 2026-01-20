@@ -1,5 +1,8 @@
 #include "Includes/header.h"
 
+extern unsigned int SCR_WIDTH;
+extern unsigned int SCR_HEIGHT;
+
 
 /**
  * @brief set model matrix to resize and recenter the model base to fit correctly
@@ -24,6 +27,7 @@ void setBaseModelMatrix(GLFWwindow* window, IModel* object) {
 	model = normalization;
 
 	vec4 normalizedCenter4 = normalization * vec4(rawCenter, 1.0f);
+	// (void)normalizedCenter4; // avoid unused variable warning
 	center = vec3({normalizedCenter4[0], normalizedCenter4[1], normalizedCenter4[2]});
 	camera.resetCamera(window);
 }

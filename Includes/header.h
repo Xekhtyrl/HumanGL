@@ -21,8 +21,8 @@ std::string fileToStr(const std::string& filePath);
 class Shader;
 
 extern Setup setup;
-extern const unsigned int SCR_WIDTH;
-extern const unsigned int SCR_HEIGHT;
+extern unsigned int SCR_WIDTH;
+extern unsigned int SCR_HEIGHT;
 extern float lastX;
 extern float lastY;
 extern float deltaTime;

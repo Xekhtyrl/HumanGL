@@ -10,8 +10,8 @@
 
 using namespace vml;
 
-const unsigned int SCR_WIDTH = 1400;
-const unsigned int SCR_HEIGHT = 1200;
+unsigned int SCR_WIDTH = 1600;
+unsigned int SCR_HEIGHT = 1600;
 float deltaTime = 0.0f;	// Time between current frame and last frame
 float lastFrame = 0.0f; // Time of last frame
 float lastX =  SCR_WIDTH / 2.0;
@@ -31,6 +31,8 @@ vec3 center;
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	(void)window;
+	SCR_WIDTH = width;
+	SCR_HEIGHT = height;
 	glViewport(0, 0, width, height);
 }
 
