@@ -37,8 +37,10 @@ class Mesh;
 
 class IModel;
 
-#include "../HierarchicModel.hpp"
+struct ModelNode;
+typedef ModelNode MNode;
 
+#include "../HierarchicModel.hpp"
 
 extern vml::mat4 model;
 extern vml::vec3 center;
@@ -51,6 +53,8 @@ void defineMatrices(Shader& shad);
 //controls.cpp
 void scaleAndResetKey(GLFWwindow *window, IModel* object);
 void rotationKey(GLFWwindow *window);
+void moveArm(GLFWwindow *window, IModel *object);
+void rotateNode(IModel* object, MNode* node, float angle, vec3 axis);
 void translationKey(GLFWwindow *window);
 void changeSetup(GLFWwindow *window, int key, int action);
 void changeLightSettings(GLFWwindow *window);

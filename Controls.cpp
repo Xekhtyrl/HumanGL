@@ -23,6 +23,7 @@ void processInput(GLFWwindow *window, IModel *object)
 	translationKey(window);
 	scaleAndResetKey(window, object);
 	changeLightSettings(window);
+	moveArm(window, object);
 }
 
 /**
@@ -132,6 +133,27 @@ void rotationKey(GLFWwindow *window){
 			translation(center) *
 			model;
 		}
+	}
+}
+
+void moveArm(GLFWwindow *window, IModel *object) {
+	HierarchicModel* modelPtr = dynamic_cast<HierarchicModel*>(object);
+	if (!modelPtr)
+		return;
+	MNode* leftArm = modelPtr->getNode("arm_L");
+	MNode* rightArm = modelPtr->getNode("arm_R");
+	MNode* upperLeftArm = modelPtr->getNode("upperArm_L");
+	// MNode* upperRightArm = modelPtr->getNode("upper_arm_R");
+	
+	if (!leftArm || !rightArm || !upperLeftArm)
+	return;
+	// printf("Found Arms\n");
+	
+	if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS){
+		printf("Rotating Left Arm Down\n");
+		// leftArm->localTransform = rotation(radians(5), vec3{1,0,0}) * leftArm->localTransform;
+		rotateNode(object, upperLeftArm, 2, vec3{1,0,0});
+		// upperLeftArm->localTransform = rotation(radians(5), vec3{1,0,0}) * upperLeftArm->localTransform;
 	}
 }
 
