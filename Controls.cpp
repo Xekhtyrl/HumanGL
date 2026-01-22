@@ -149,12 +149,16 @@ void moveArm(GLFWwindow *window, IModel *object) {
 	return;
 	// printf("Found Arms\n");
 	
+	// leftArm->pivot = leftArm->pivotWorld;
+	
 	if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS){
-		printf("Rotating Left Arm Down\n");
-		// leftArm->localTransform = rotation(radians(5), vec3{1,0,0}) * leftArm->localTransform;
-		rotateNode(object, upperLeftArm, 2, vec3{1,0,0});
-		// upperLeftArm->localTransform = rotation(radians(5), vec3{1,0,0}) * upperLeftArm->localTransform;
+		rotateNode(object, upperLeftArm, 1, vec3{-1,0,0});
 	}
+	if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS){
+		rotateNode(object, leftArm, 1, vec3{-1,0,0});
+	}
+
+
 }
 
 /**

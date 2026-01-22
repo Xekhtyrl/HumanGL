@@ -33,9 +33,15 @@ struct VertexKeyHash {
 struct ModelNode {
 	std::string name;
 	mat4 localTransform = vml::identity<float, 4>();
+	mat4 globalTransform = vml::identity<float, 4>();
 	Mesh* mesh;
+
 	std::vector<std::string> children;
-	vec3 pivot = {0,0,0};
+	std::string parent;
+	
+	vec3 pivotInit = {0,0,0};
+	vec3 pivotWorld = {0,0,0};
+	vec3 pivotLocal = {0,0,0};
 
 	ModelNode() {};
 	ModelNode(const std::string _name) : name(_name) {}

@@ -62,7 +62,7 @@ HierarchicModel::~HierarchicModel() {
 void HierarchicModel::Draw(Shader &shader) {
 	for (auto& [key, node]: model.nodes) {
 		Mesh *mesh = node->mesh;
-		mesh->Draw(shader, materials[mesh->materialName()], node->localTransform, node->pivot);
+		mesh->Draw(shader, materials[mesh->materialName()], node->globalTransform, node->pivot);
 	}
 }
 

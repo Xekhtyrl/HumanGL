@@ -231,7 +231,7 @@ void HierarchicModel::loadModel(std::string path) {
 
 void HierarchicModel::printGraph(MStruct& obj, MNode *node) {
 	std::cout << node->name << std::endl;
-	std::cout << "\tpivot: " << node->pivot << std::endl;;
+	std::cout << "\tpivot: " << node->pivotWorld << std::endl;;
 	if (node->children.size()) {
 		std::cout << "\tchildren: ";
 		for (auto& x: node->children)
@@ -277,15 +277,14 @@ void HierarchicModel::loadSkeleton(const std::string& path) {
 			ss.ignore(std::numeric_limits<std::streamsize>::max(), '[');
 
 			// Read numbers
-			ss >> obj->pivot[0];
+			ss >> obj->pivotInit[0];
 			ss.ignore(1); // skip ','
-			ss >> obj->pivot[1];
+			ss >> obj->pivotInit[1];
 			ss.ignore(1); // skip ','
-			ss >> obj->pivot[2];
-
-			// std::cout << obj->pivot[0] << " "
-			// 		<< obj->pivot[1] << " "
-			// 		<< obj->pivot[2] << "\n";
+			ss >> obj->pivotInit[2];
+			// std::cout << obj->pivotLocal[0] << " "
+			// 		<< obj->pivotLocal[1] << " "
+			// 		<< obj->pivotLocal[2] << "\n";
 		}
 		else if (type.find("children") != std::string::npos) {
 			std::string val;
@@ -309,6 +308,40 @@ void HierarchicModel::loadSkeleton(const std::string& path) {
 			model.nodes[type] = obj;
 		}
 	}
+
+	// Set parent references for all nodes
+	for (auto& nodeEntry : model.nodes) {
+		MNode* node = nodeEntry.second;
+		for (const auto& childName : node->children) {
+			if (model.nodes.count(childName) > 0) {
+				model.nodes[childName]->parent = node->name;
+			}
+		}
+	}
+
+	for (auto& nodeEntry : model.nodes) {
+		MNode* node = nodeEntry.second;
+		if (node->parent != "")
+		{
+			vml::mat4 parentWorldTransform = model.nodes[node->parent]->globalTransform;
+			// parentWorldTransform = translation(parentWorldTransform, node->pivotWorld);
+			printf("node parent position: ");
+			parentWorldTransform.print();
+			// vml::mat4 invParentWorld = inverse(parentWorldTransform);
+
+			vml::vec4 pivotW(node->pivotInit, 1.0f);
+			pivotW -= vml::vec4(model.nodes[node->parent]->pivotInit, 1.0f);
+			printf("Node %s pivotW: %f, %f, %f, %f\n", node->name.c_str(), pivotW[0], pivotW[1], pivotW[2], pivotW[3]);
+			// vml::vec4 pivotL = invParentWorld * pivotW;
+			// printf("Node %s pivotL: %f, %f, %f, %f\n", node->name.c_str(), pivotL[0], pivotL[1], pivotL[2], pivotL[3]);
+			node->pivotLocal = vml::vec3({pivotW[0], pivotW[1], pivotW[2]});
+		}
+		else
+		{
+			node->pivotLocal = node->pivotInit;
+		}
+	}
+
 	checkLink(model, model.nodes[model.order[0]], std::deque<std::string>());
 	// printGraph(final, final.nodes[final.order[0]]);
 }
