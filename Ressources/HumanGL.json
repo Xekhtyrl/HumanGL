@@ -4,33 +4,33 @@
 	},
 	"upperArm_L": {
 		"children": ["arm_L"],
-		"pivot": [-0.25, 0.5, 0]
+		"pivot": [0.25, 0.5, 0]
 	},
 	"upperArm_R": {
 		"children": ["arm_R"],
-		"pivot": [0.25, 0.5, 0]
+		"pivot": [-0.25, 0.5, 0]
 	},
 	"thight_R": {
 		"children": ["leg_R"],
-		"pivot": [0.13,-0.5,0]
+		"pivot": [-0.13,-0.5,0]
 	},
 	"thight_L": {
 		"children": ["leg_L"],
-		"pivot": [-0.13,-0.5,0]
+		"pivot": [0.13,-0.5,0]
 	},
 	"head": {
 		"pivot": [0,0.5,0]
 	},
 	"arm_L": {
-		"pivot": [-0.35,0.2,0]
+		"pivot": [0.35,-0.1,0]
 	},
 	"arm_R": {
-		"pivot": [0.35,0.2,0]
+		"pivot": [-0.35,-0.1,0]
 	},
 	"leg_L": {
-		"pivot": [-0.13,-1,0]
+		"pivot": [0.13,-1,0]
 	},
 	"leg_R": {
-		"pivot": [0.13,-1,0]
+		"pivot": [-0.13,-1,0]
 	}
 }
