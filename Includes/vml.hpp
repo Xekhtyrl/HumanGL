@@ -413,6 +413,21 @@ namespace vml {
 		});
 	}
 	/**
+		 * @brief rotation matrix with a pivot point for rotating around an arbitrary point in space
+		 * 
+		 * @param rad	a float value that is the radian of the angle of rotation desired
+		 * @param axis	a vec3 precising on which axis you want the rotation to be (e.g. {1,0,0} would be on the x axis)
+		 * @param pivot	a vec3 representing the pivot point around which to rotate
+		 * 
+		 * @return a mat4 rotation matrix applied around the pivot point
+		 */
+		inline mat4 rotation_pivot(float rad, vec3 axis, vec3 pivot) {
+			mat4 res = translation(pivot);
+			res *= rotation(rad, axis);
+			res *= translation(vec3{-pivot[0], -pivot[1], -pivot[2]});
+			return res;
+		}
+	/**
 	 * @brief Builds a LookAt view matrix that transforms world space into camera space.
 	 * @param eye     The camera position.
 	 * @param center  The point the camera looks at.

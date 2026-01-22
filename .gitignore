@@ -4,3 +4,8 @@
 .git
 *.out
 HumanGL
+build
+err.log
+imgui.ini
+Scop
+Obj

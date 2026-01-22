@@ -68,6 +68,11 @@ class HierarchicModel : public IModel
 		size_t ms();
 		vec3 min();
 		vec3 max();
+		MNode* getNode(const std::string& name) {
+			if (model.nodes.count(name))
+				return model.nodes[name];
+			return nullptr;
+		}
 	private:
 		// model data
 		MStruct model;

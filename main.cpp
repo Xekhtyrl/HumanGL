@@ -151,6 +151,8 @@ int main(int argc, char **argv)
 		log << "Shader created Successfully" << std::endl;
 		// Create Model here
 		IModel *object = new HierarchicModel(obj.c_str());
+		printf("min: %f, %f, %f\n", object->min().data[0], object->min().data[1], object->min().data[2]);
+		// object->min = object->min() - vec3{0.1f, 0.1f, 0.1f};
 		log << "Kodel created Successfully" << std::endl;
 		setBaseModelMatrix(window, object);
 		renderLoop(window, shad, object);
