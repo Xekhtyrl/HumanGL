@@ -55,7 +55,7 @@ void defineMatrices(Shader& shad);
 void scaleAndResetKey(GLFWwindow *window, IModel* object);
 void rotationKey(GLFWwindow *window);
 void animate(GLFWwindow *window, IModel *object, Animation *anim);
-void rotateNode(IModel* object, MNode* node, float angle, vec3 axis);
+void rotateNode(IModel* object, MNode* node, vec3 angles);
 void translationKey(GLFWwindow *window);
 void changeSetup(GLFWwindow *window, int key, int action);
 void changeLightSettings(GLFWwindow *window);

@@ -19,13 +19,19 @@ void frameChildTransforms(HierarchicModel* modelPtr, MNode* node) {
     }
 }
 
-void rotateNode(IModel* object, MNode* node, float angle, vec3 axis)
+void rotateNode(IModel* object, MNode* node, vec3 angles)
 {
     HierarchicModel* modelPtr = dynamic_cast<HierarchicModel*>(object);
     if (!modelPtr || !node)
         return;
 
-    node->localTransform = rotation_pivot(radians(angle), axis, node->pivotLocal) * node->localTransform;
+    // Appliquer les rotations sur chaque axe (X, Y, Z)
+    if (angles[0] != 0.0f)
+        node->localTransform = rotation_pivot(radians(angles[0]), vec3{1, 0, 0}, node->pivotLocal) * node->localTransform;
+    if (angles[1] != 0.0f)
+        node->localTransform = rotation_pivot(radians(angles[1]), vec3{0, 1, 0}, node->pivotLocal) * node->localTransform;
+    if (angles[2] != 0.0f)
+        node->localTransform = rotation_pivot(radians(angles[2]), vec3{0, 0, 1}, node->pivotLocal) * node->localTransform;
 
     frameGlobalTransform(modelPtr, node);
     frameChildTransforms(modelPtr, node);

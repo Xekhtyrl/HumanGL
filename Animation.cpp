@@ -3,98 +3,129 @@
 
 void Animation::print() const {
     std::cout << "Animation State: " << state << "\n";
-    std::cout << "Duration: " << duration << "\n";
-    std::cout << "Tracks:\n";
-    for (const auto& [trackName, keyframesList] : tracks) {
-        std::cout << "  Track: " << trackName << "\n";
-        for (const auto& keyframesMap : keyframesList) {
-            std::cout << "  Keyframes:\n";
-            std::cout << keyframesMap.size() << " keyframes found.\n";
-            for (const auto& [time, values] : keyframesMap) {
-                std::cout << "    Time: " << time << " -> Values: (" 
-                            << values[0] << ", " 
-                            << values[1] << ", " 
-                            << values[2] << ")\n";
+    for (const auto& [state, transitionPose] : pl) {
+        std::cout << "  PlayState: " << static_cast<int>(state) << ", Duration: " << transitionPose.duration << "\n";
+        std::cout << "    Keyframes:\n";
+        for (const auto& [time, boneMap] : transitionPose.keyframes) {
+            std::cout << "      Time: " << time << "\n";
+            for (const auto& [boneName, values] : boneMap) {
+                std::cout << "        Bone: " << boneName << " -> Values: (" 
+                          << values[0] << ", " 
+                          << values[1] << ", " 
+                          << values[2] << ")\n";
             }
         }
     }
+ 
 }
 
 
 
-void Animation::convertToKeyframes() {
-    for (const auto& [boneName, keyframesList] : tracks) {
+void Animation::convertToKeyframes(PlayState state, ParseTransitionPose transitionPose) {
+    dprintf(1, "Converting to keyframes...\n");
+    pl[state].duration = transitionPose.duration;
+    for (const auto& [boneName, keyframesList] : transitionPose.tracks) {
         for (const auto& keyframesMap : keyframesList) {
             for (const auto& [time, values] : keyframesMap) {
-                keyframes[time][boneName] = values;
+                pl[state].keyframes[time][boneName] = values;
             }
         }
     }
-    keyframes[duration] = {};
-    if (keyframes.find(0) == keyframes.end()) {
-        keyframes[0] = {};
+    if (pl[state].keyframes.find(transitionPose.duration) == pl[state].keyframes.end()) {
+        pl[state].keyframes[transitionPose.duration] = {};
+    }
+    if (pl[state].keyframes.find(0.0f) == pl[state].keyframes.end()) {
+        pl[state].keyframes[0.0f] = {};
     }
 }
 
-void Animation::printKeyframes() const {
-    std::cout << "Keyframes:\n";
-    for (const auto& [time, boneMap] : keyframes) {
-        std::cout << "  Time: " << time << "\n";
-        for (const auto& [boneName, values] : boneMap) {
-            std::cout << "    Bone: " << boneName << " -> Values: (" 
-                        << values[0] << ", " 
-                        << values[1] << ", " 
-                        << values[2] << ")\n";
-        }
-    }
-}
+// void Animation::printKeyframes() const {
+//     std::cout << "Keyframes:\n";
+//     for (const auto& [time, boneMap] : keyframes) {
+//         std::cout << "  Time: " << time << "\n";
+//         for (const auto& [boneName, values] : boneMap) {
+//             std::cout << "    Bone: " << boneName << " -> Values: (" 
+//                         << values[0] << ", " 
+//                         << values[1] << ", " 
+//                         << values[2] << ")\n";
+//         }
+//     }
+// }
 
-void Animation::printActualPose() const {
-    std::cout << "Actual Pose:\n";
-    for (const auto& [boneName, values] : actualPose) {
-        std::cout << "    Bone: " << boneName << " -> Values: (" 
-                    << values[0] << ", " 
-                    << values[1] << ", " 
-                    << values[2] << ")\n";
-    }
-}
+// void Animation::printActualPose() const {
+//     std::cout << "Actual Pose:\n";
+//     for (const auto& [boneName, values] : actualPose) {
+//         std::cout << "    Bone: " << boneName << " -> Values: (" 
+//                     << values[0] << ", " 
+//                     << values[1] << ", " 
+//                     << values[2] << ")\n";
+//     }
+// }
 
 void Animation::flipflop() {
-    isPlaying = !isPlaying;
-    currentTime = 0.0f;
-    currentFrameTime = 0.0f;
-    actualPose = {};
-    printf("flip flop called. isPlaying: %d\n", isPlaying);
-    if (keyframes.find(currentFrameTime) != keyframes.end()) {
-        for (const auto& [boneName, values] : keyframes[currentFrameTime]) {
-            printf("Setting bone: %s to values (%f, %f, %f)\n", boneName.c_str(), values[0], values[1], values[2]);
-            actualPose[boneName] = values;                
-        }
-        printActualPose();
+    if (playState == PlayState::LOOP) {
+        nextState = PlayState::FINISH;
+    } else if (playState == PlayState::FINISH) {
+        nextState = PlayState::START;
     }
+    else if (playState == PlayState::STOPPED) {
+        playState = PlayState::START;
+        nextState = PlayState::LOOP;
+    }
+    // print();
 }
 
-void Animation::update(float deltaTime) {
-    if (!isPlaying) return;
+void Animation::finishFrame() {
+    currentTime = 0.0f;
+    currentFrameTime = 0.0f;
+    playState = nextState;
+    if (playState == PlayState::FINISH)
+        nextState = PlayState::STOPPED;
+    if (playState == PlayState::START)
+        nextState = PlayState::LOOP;
+    if (playState == PlayState::LOOP)
+        nextState = PlayState::LOOP;
+    actualPose = {};
 
-    currentTime += deltaTime;
-    
-    if (currentTime >= duration) {
-        currentTime = std::fmod(currentTime, duration);
-        currentFrameTime = 0.0f;
+    auto it = pl[playState].keyframes.find(currentFrameTime);
+    if (it != pl[playState].keyframes.end()) {
+        for (const auto& [boneName, values] : it->second) {
+            printf("Setting bone: %s to values (%f, %f, %f)\n", boneName.c_str(), values[0], values[1], values[2]);
+            actualPose[boneName] = values;
+        }
+        // printActualPose();
+    }
     }
 
-    std::map<float, std::map<std::string, vec3>>::iterator it = keyframes.find(currentFrameTime);
+void Animation::update(float deltaTime) {
+    if (playState == PlayState::STOPPED) return;
 
-    std::map<float, std::map<std::string, vec3>>::iterator nextIt = std::next(it);
-    
+    currentTime += deltaTime;
+
+    if (currentTime >= pl[playState].duration) {
+        finishFrame();
+    }
+
+    auto it = pl[playState].keyframes.find(currentFrameTime);
+    if (it == pl[playState].keyframes.end()) 
+    {
+        print();
+        printf("No keyframe found for current frame time: %f, playState: %d\n", currentFrameTime, static_cast<int>(playState));
+        return;
+    }
+
+    auto nextIt = std::next(it);
+    if (nextIt == pl[playState].keyframes.end()) 
+    {
+        printf("No next keyframe found after current frame time: %f\n", currentFrameTime);
+        return;
+    }
+
     if (currentTime >= nextIt->first) {
         currentFrameTime = nextIt->first;
-        if (keyframes.find(currentFrameTime) != keyframes.end()) {
-            for (const auto& [boneName, values] : keyframes[currentFrameTime]) {
-                actualPose[boneName] = values;                
-            }
-            printActualPose();
+        for (const auto& [boneName, values] : nextIt->second) {
+            actualPose[boneName] = values;
         }
+        // printActualPose();
     }
 }

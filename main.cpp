@@ -155,8 +155,6 @@ int main(int argc, char **argv)
 		// object->min = object->min() - vec3{0.1f, 0.1f, 0.1f};
 		log << "Kodel created Successfully" << std::endl;
 		Animation anim = loadAnimation("Ressources/Movement.json");
-		anim.convertToKeyframes();
-		anim.printKeyframes();
 		setBaseModelMatrix(window, object);
 		renderLoop(window, shad, object, &anim);
 	}

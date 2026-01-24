@@ -142,11 +142,14 @@ void animate(GLFWwindow *window, IModel *object, Animation *anim) {
 		return;
 
 	anim->update(deltaTime);
-	if (anim->isPlaying) {
-		for (const auto& [boneName, values] : anim->keyframes[anim->currentFrameTime]) {
-			printf("Animating bone: %s with values (%f, %f, %f)\n", boneName.c_str(), values[0], values[1], values[2]);
-			MNode* bone = modelPtr->getNode(boneName);
-			rotateNode(object, bone, 0.2f, vec3{0,1,0});
+	if (anim->playState != PlayState::STOPPED) {
+		auto it = anim->pl[anim->playState].keyframes.find(anim->currentFrameTime);
+		if (it != anim->pl[anim->playState].keyframes.end()) {
+			for (const auto& [boneName, values] : it->second) {
+				// printf("Animating bone: %s with values (%f, %f, %f)\n", boneName.c_str(), values[0], values[1], values[2]);
+				MNode* bone = modelPtr->getNode(boneName);
+				rotateNode(object, bone, values);
+			}
 		}
 	}
 	if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS){
