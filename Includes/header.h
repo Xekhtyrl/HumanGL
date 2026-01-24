@@ -41,6 +41,7 @@ struct ModelNode;
 typedef ModelNode MNode;
 
 #include "../HierarchicModel.hpp"
+#include "../Animation.hpp"
 
 extern vml::mat4 model;
 extern vml::vec3 center;
@@ -53,12 +54,12 @@ void defineMatrices(Shader& shad);
 //controls.cpp
 void scaleAndResetKey(GLFWwindow *window, IModel* object);
 void rotationKey(GLFWwindow *window);
-void moveArm(GLFWwindow *window, IModel *object);
+void animate(GLFWwindow *window, IModel *object, Animation *anim);
 void rotateNode(IModel* object, MNode* node, float angle, vec3 axis);
 void translationKey(GLFWwindow *window);
 void changeSetup(GLFWwindow *window, int key, int action);
 void changeLightSettings(GLFWwindow *window);
-void processInput(GLFWwindow *window, IModel* object);
+void processInput(GLFWwindow *window, IModel* object, Animation *anim);
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void setup_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -67,3 +68,6 @@ void setup_callback(GLFWwindow* window, int key, int scancode, int action, int m
 GLFWwindow* initWindow(std::string name);
 void initImgui(GLFWwindow* window);
 void createUIImgui();
+
+//animation.cpp
+Animation loadAnimation(const std::string& filepath);

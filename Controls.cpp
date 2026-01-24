@@ -6,7 +6,7 @@
  * @brief main function that regroup and process all inputs (functions)
  * @param window glfw window pointer
  */
-void processInput(GLFWwindow *window, IModel *object)
+void processInput(GLFWwindow *window, IModel *object, Animation *anim)
 {
 
 	if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -23,7 +23,7 @@ void processInput(GLFWwindow *window, IModel *object)
 	translationKey(window);
 	scaleAndResetKey(window, object);
 	changeLightSettings(window);
-	moveArm(window, object);
+	animate(window, object, anim);
 }
 
 /**
@@ -136,29 +136,22 @@ void rotationKey(GLFWwindow *window){
 	}
 }
 
-void moveArm(GLFWwindow *window, IModel *object) {
+void animate(GLFWwindow *window, IModel *object, Animation *anim) {
 	HierarchicModel* modelPtr = dynamic_cast<HierarchicModel*>(object);
 	if (!modelPtr)
 		return;
-	MNode* leftArm = modelPtr->getNode("arm_L");
-	MNode* rightArm = modelPtr->getNode("arm_R");
-	MNode* upperLeftArm = modelPtr->getNode("upperArm_L");
-	// MNode* upperRightArm = modelPtr->getNode("upper_arm_R");
-	
-	if (!leftArm || !rightArm || !upperLeftArm)
-	return;
-	// printf("Found Arms\n");
-	
-	// leftArm->pivot = leftArm->pivotWorld;
-	
+
+	anim->update(deltaTime);
+	if (anim->isPlaying) {
+		for (const auto& [boneName, values] : anim->keyframes[anim->currentFrameTime]) {
+			printf("Animating bone: %s with values (%f, %f, %f)\n", boneName.c_str(), values[0], values[1], values[2]);
+			MNode* bone = modelPtr->getNode(boneName);
+			rotateNode(object, bone, 0.2f, vec3{0,1,0});
+		}
+	}
 	if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS){
-		rotateNode(object, upperLeftArm, 1, vec3{-1,0,0});
+		anim->flipflop();
 	}
-	if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS){
-		rotateNode(object, leftArm, 1, vec3{-1,0,0});
-	}
-
-
 }
 
 /**

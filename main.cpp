@@ -42,14 +42,14 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
  * @param window glfw window pointer.
  * @param shader shader class needed beforehand to draw the meshes with and send update to the program on the model.
  */
-void renderLoop(GLFWwindow *window, Shader& shader, IModel* object) {
+void renderLoop(GLFWwindow *window, Shader& shader, IModel* object, Animation *anim) {
 	
 	while(!glfwWindowShouldClose(window))
 	{
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame; 
-		processInput(window, object);
+		processInput(window, object, anim);
 		// Set the clear color (RGBA)
 		glClearColor(0.75, 0.75f, 0.6f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -154,8 +154,11 @@ int main(int argc, char **argv)
 		printf("min: %f, %f, %f\n", object->min().data[0], object->min().data[1], object->min().data[2]);
 		// object->min = object->min() - vec3{0.1f, 0.1f, 0.1f};
 		log << "Kodel created Successfully" << std::endl;
+		Animation anim = loadAnimation("Ressources/Movement.json");
+		anim.convertToKeyframes();
+		anim.printKeyframes();
 		setBaseModelMatrix(window, object);
-		renderLoop(window, shad, object);
+		renderLoop(window, shad, object, &anim);
 	}
 	catch(std::exception& e){
 		log << "Exception catched: " << e.what() << std::endl;

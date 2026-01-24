@@ -26,6 +26,8 @@ SRCS =	main.cpp \
 		ModelLoadObj.cpp \
 		Mesh.cpp \
 		rotateNode.cpp \
+		LoadAnimation.cpp \
+		Animation.cpp \
 		$(IMGUI_SRCS)
 SRCC = glad.c
 
