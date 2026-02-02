@@ -107,43 +107,45 @@ static ParseTransitionPose parseTransitionPose(const std::string& content, const
     return pose;
 }
 
-Animation loadAnimation(const std::string& filepath) {
+std::vector<Animation> loadAnimations(const std::string& filepath) {
     std::ifstream file(filepath);
     std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-    
-    Animation animation;
-    printf("Loading animation from %s\n", filepath.c_str());
-    size_t statePos = content.find("\"state\"");
-    if (statePos != std::string::npos) {
-        size_t colonPos = content.find(":", statePos);
-        size_t quoteStart = content.find("\"", colonPos);
-        size_t quoteEnd = content.find("\"", quoteStart + 1);
-        animation.state = content.substr(quoteStart + 1, quoteEnd - quoteStart - 1);
+
+    std::vector<Animation> animations;
+    printf("Loading animations from %s\n", filepath.c_str());
+
+    size_t pos = content.find("{");
+    if (pos == std::string::npos) return animations;
+    pos++;
+
+    while (pos < content.size()) {
+        size_t nameStart = content.find("\"", pos);
+        if (nameStart == std::string::npos) break;
+
+        size_t nameEnd = content.find("\"", nameStart + 1);
+        if (nameEnd == std::string::npos) break;
+
+        std::string animName = content.substr(nameStart + 1, nameEnd - nameStart - 1);
+
+        size_t animStart = content.find("{", nameEnd);
+        if (animStart == std::string::npos) break;
+
+        size_t animEnd = findMatchingBrace(content, animStart);
+        std::string animContent = content.substr(animStart, animEnd - animStart + 1);
+
+        Animation animation;
+        animation.state = animName;
+
+        animation.convertToKeyframes(PlayState::START, parseTransitionPose(animContent, "start"));
+        animation.convertToKeyframes(PlayState::LOOP, parseTransitionPose(animContent, "loop"));
+        animation.convertToKeyframes(PlayState::FINISH, parseTransitionPose(animContent, "finish"));
+
+        printf("Loaded animation: %s\n", animName.c_str());
+        animation.print();
+
+        animations.push_back(animation);
+        pos = animEnd + 1;
     }
-    
-    // animation.duration = parseDurationInSection(content);
-    // size_t durationPos = content.find("\"duration\"");
-    // if (durationPos != std::string::npos) {
-    //     size_t colonPos = content.find(":", durationPos);
-    //     size_t numStart = content.find_first_of("0123456789", colonPos);
-    //     size_t numEnd = content.find_first_not_of("0123456789.", numStart);
-    //     animation.duration = std::stof(content.substr(numStart, numEnd - numStart));
-    // }
-    
-    // size_t tracksPos = content.find("\"tracks\"");
-    // if (tracksPos != std::string::npos) {
-    //     size_t tracksStart = content.find("{", tracksPos);
-    //     size_t tracksEnd = findMatchingBrace(content, tracksStart);
-    //     std::string tracksStr = content.substr(tracksStart + 1, tracksEnd - tracksStart - 1);
-    //     animation.tracks = parseBoneTracks(tracksStr);
-    // }
 
-    animation.convertToKeyframes(PlayState::START, parseTransitionPose(content, "start"));
-    animation.convertToKeyframes(PlayState::LOOP, parseTransitionPose(content, "loop"));
-    animation.convertToKeyframes(PlayState::FINISH, parseTransitionPose(content, "finish"));
-    animation.print();
-    dprintf(1, "aaa\n");
-
-
-    return animation;
+    return animations;
 }

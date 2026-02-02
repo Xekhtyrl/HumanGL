@@ -90,7 +90,7 @@ void Animation::finishFrame() {
     auto it = pl[playState].keyframes.find(currentFrameTime);
     if (it != pl[playState].keyframes.end()) {
         for (const auto& [boneName, values] : it->second) {
-            printf("Setting bone: %s to values (%f, %f, %f)\n", boneName.c_str(), values[0], values[1], values[2]);
+            // printf("Setting bone: %s to values (%f, %f, %f)\n", boneName.c_str(), values[0], values[1], values[2]);
             actualPose[boneName] = values;
         }
         // printActualPose();
@@ -104,6 +104,7 @@ void Animation::update(float deltaTime) {
 
     if (currentTime >= pl[playState].duration) {
         finishFrame();
+        return;
     }
 
     auto it = pl[playState].keyframes.find(currentFrameTime);

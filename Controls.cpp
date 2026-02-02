@@ -6,7 +6,7 @@
  * @brief main function that regroup and process all inputs (functions)
  * @param window glfw window pointer
  */
-void processInput(GLFWwindow *window, IModel *object, Animation *anim)
+void processInput(GLFWwindow *window, IModel *object, std::vector<Animation> *anims)
 {
 
 	if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -23,7 +23,7 @@ void processInput(GLFWwindow *window, IModel *object, Animation *anim)
 	translationKey(window);
 	scaleAndResetKey(window, object);
 	changeLightSettings(window);
-	animate(window, object, anim);
+	animate(window, object, anims);
 }
 
 /**
@@ -136,24 +136,40 @@ void rotationKey(GLFWwindow *window){
 	}
 }
 
-void animate(GLFWwindow *window, IModel *object, Animation *anim) {
+void animate(GLFWwindow *window, IModel *object, std::vector<Animation> *anims) {
 	HierarchicModel* modelPtr = dynamic_cast<HierarchicModel*>(object);
-	if (!modelPtr)
+	if (!modelPtr || anims->empty())
 		return;
 
-	anim->update(deltaTime);
-	if (anim->playState != PlayState::STOPPED) {
-		auto it = anim->pl[anim->playState].keyframes.find(anim->currentFrameTime);
-		if (it != anim->pl[anim->playState].keyframes.end()) {
-			for (const auto& [boneName, values] : it->second) {
-				// printf("Animating bone: %s with values (%f, %f, %f)\n", boneName.c_str(), values[0], values[1], values[2]);
-				MNode* bone = modelPtr->getNode(boneName);
-				rotateNode(object, bone, values);
+	// Use first animation for now (can be extended to select animation)
+	// Animation* anim = &(*anims)[0];
+
+	for (auto& anim : *anims)
+	{
+		if (anim.playState != PlayState::STOPPED) {
+			anim.update(deltaTime);
+			if (anim.playState == PlayState::STOPPED) {
+				modelPtr->resetModel();
+				printf("Animation %s stopped and bones reset.\n", anim.state.c_str());
 			}
+			else {
+				auto it = anim.pl[anim.playState].keyframes.find(anim.currentFrameTime);
+				if (it != anim.pl[anim.playState].keyframes.end()) {
+					for (const auto& [boneName, values] : it->second) {
+						// printf("Animating bone: %s with values (%f, %f, %f)\n", boneName.c_str(), values[0], values[1], values[2]);
+						MNode* bone = modelPtr->getNode(boneName);
+						rotateNode(object, bone, values);
+					}
+				}
+			}
+			break;
 		}
 	}
 	if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS){
-		anim->flipflop();
+		anims->at(0).flipflop();
+	}
+	if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS){
+		anims->at(1).flipflop();
 	}
 }
 
@@ -193,11 +209,11 @@ void translationKey(GLFWwindow *window) {
  * @param window glfw window pointer
  */
 void scaleAndResetKey(GLFWwindow *window, IModel *object) {
-	if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) == GLFW_PRESS){
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
 		model *= scale(vec3{0.9,0.9,0.9});
 		setup.scaleFactor *= 0.9;
 	}
-	if (glfwGetKey(window, GLFW_KEY_KP_ADD) == GLFW_PRESS){
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS){
 		model *= scale(vec3{10. / 9.,10. / 9.,10. / 9.});
 		setup.scaleFactor *= 10. / 9.;
 	}

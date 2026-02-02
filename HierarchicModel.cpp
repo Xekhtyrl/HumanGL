@@ -179,3 +179,14 @@ void HierarchicModel::convertMtlPath(std::string& mtlpath) {
 	if (mtlpath[0] != '/')
 		mtlpath.insert(mtlpath.begin(), '/');
 }
+
+
+void HierarchicModel::resetModel() {
+			for (const auto& nodeName : model.order) {
+				MNode* node = getNode(nodeName);
+				if (node) {
+					node->localTransform = vml::identity<float, 4>();
+				}
+				printf("Reset node: %s\n", nodeName.c_str());
+			}
+		}

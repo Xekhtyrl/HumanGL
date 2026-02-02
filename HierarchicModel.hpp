@@ -43,7 +43,6 @@ struct ModelNode {
 	vec3 pivotWorld = {0,0,0};
 	vec3 pivotLocal = {0,0,0};
 
-	ModelNode() {};
 	ModelNode(const std::string _name) : name(_name) {}
 } typedef MNode;
 
@@ -79,6 +78,8 @@ class HierarchicModel : public IModel
 				return model.nodes[name];
 			return nullptr;
 		}
+
+		void resetModel();
 	private:
 		// model data
 		MStruct model;

@@ -54,12 +54,13 @@ void defineMatrices(Shader& shad);
 //controls.cpp
 void scaleAndResetKey(GLFWwindow *window, IModel* object);
 void rotationKey(GLFWwindow *window);
-void animate(GLFWwindow *window, IModel *object, Animation *anim);
+void animate(GLFWwindow *window, IModel *object, std::vector<Animation> *anims);
 void rotateNode(IModel* object, MNode* node, vec3 angles);
+void resetNode(IModel* object, MNode* node);
 void translationKey(GLFWwindow *window);
 void changeSetup(GLFWwindow *window, int key, int action);
 void changeLightSettings(GLFWwindow *window);
-void processInput(GLFWwindow *window, IModel* object, Animation *anim);
+void processInput(GLFWwindow *window, IModel* object, std::vector<Animation> *anims);
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void setup_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -70,4 +71,4 @@ void initImgui(GLFWwindow* window);
 void createUIImgui();
 
 //animation.cpp
-Animation loadAnimation(const std::string& filepath);
+std::vector<Animation> loadAnimations(const std::string& filepath);
