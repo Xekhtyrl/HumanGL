@@ -209,16 +209,28 @@ void translationKey(GLFWwindow *window) {
  * @param window glfw window pointer
  */
 void scaleAndResetKey(GLFWwindow *window, IModel *object) {
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
+	if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS){
 		model *= scale(vec3{0.9,0.9,0.9});
 		setup.scaleFactor *= 0.9;
 	}
-	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS){
+	if (glfwGetKey(window, GLFW_KEY_KP_ADD) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS){
 		model *= scale(vec3{10. / 9.,10. / 9.,10. / 9.});
 		setup.scaleFactor *= 10. / 9.;
 	}
 	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS){
 		setBaseModelMatrix(window, object);
+	}
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS){
+		HierarchicModel* modelPtr = dynamic_cast<HierarchicModel*>(object);
+		if (modelPtr){
+			modelPtr->getNode("arm_L")->localTransform *= scale(vec3{10. / 9.,10. / 9.,10. / 9.});
+		}
+	}
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS){
+		HierarchicModel* modelPtr = dynamic_cast<HierarchicModel*>(object);
+		if (modelPtr){
+			modelPtr->getNode("arm_L")->localTransform *= scale(vec3{0.9,0.9,0.9});
+		}
 	}
 }
 
