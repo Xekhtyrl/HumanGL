@@ -78,6 +78,7 @@ void Mesh::Draw(Shader &shader, Material material, mat4 transform, vec3 pivot) {
 /// @param min vec3 containing the minimum values of the model
 /// @param size Size of the model as a vec3
 void Mesh::setupMesh(vec3 min, vec3 size) {
+	_center = calculateCenter();
 	if (!_vnPresent){
 		generateDefaultVN(min, size);
 	}
@@ -225,4 +226,21 @@ void Mesh::generateDefaultVN(vec3 min, vec3 size) {
 	// Normalize final normals
 	for (auto &v : _vertices)
 		v.Normal = normalize(v.Normal);
+}
+
+vec3 Mesh::calculateCenter() {
+	vec3 center{0.f};
+	for (const auto& v : _vertices) {
+		center[0] += v.Position[0];
+		center[1] += v.Position[1];
+		center[2] += v.Position[2];
+	}
+	size_t count = _vertices.size();
+	if (count > 0) {
+		center[0] /= count;
+		center[1] /= count;
+		center[2] /= count;
+	}
+	std::cout << "Calculated center: [" << center[0] << ", " << center[1] << ", " << center[2] << "]" << std::endl;
+	return center;
 }

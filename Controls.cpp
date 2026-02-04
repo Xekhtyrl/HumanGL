@@ -223,13 +223,19 @@ void scaleAndResetKey(GLFWwindow *window, IModel *object) {
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS){
 		HierarchicModel* modelPtr = dynamic_cast<HierarchicModel*>(object);
 		if (modelPtr){
-			modelPtr->getNode("arm_L")->localTransform *= scale(vec3{10. / 9.,10. / 9.,10. / 9.});
+			std::cout << "pivot before scale upperArm_L: " << modelPtr->getNode("upperArm_L")->pivotLocal[0] << ", "
+					  << modelPtr->getNode("upperArm_L")->pivotLocal[1] << ", "
+					  << modelPtr->getNode("upperArm_L")->pivotLocal[2] << std::endl;
+			modelPtr->getNode("upperArm_L")->localTransform *= scale(vec3{10. / 9.,10. / 9.,10. / 9.});
+			std::cout << "pivot after scale upperArm_L: " << modelPtr->getNode("upperArm_L")->pivotLocal[0] << ", "
+					  << modelPtr->getNode("upperArm_L")->pivotLocal[1] << ", "
+					  << modelPtr->getNode("upperArm_L")->pivotLocal[2] << std::endl;
 		}
 	}
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS){
 		HierarchicModel* modelPtr = dynamic_cast<HierarchicModel*>(object);
 		if (modelPtr){
-			modelPtr->getNode("arm_L")->localTransform *= scale(vec3{0.9,0.9,0.9});
+			modelPtr->getNode("upperArm_L")->localTransform *= scale(vec3{0.9,0.9,0.9});
 		}
 	}
 }

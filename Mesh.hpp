@@ -42,6 +42,7 @@ class Mesh {
         void name(std::string name);
 		void vnPresent(bool present);
 		void vtPresent(bool present);
+		vec3 center() const;
 
     private:
 		        // mesh data
@@ -54,9 +55,11 @@ class Mesh {
 		GLuint 						_VAO;
 		GLuint 						_VBO;
 		GLuint 						_EBO;
+		vec3						_center;
 
 		vec2 generateCubicUV(const vec3& p, const vec3& n, 
                      const vec3& min, const vec3& size);
         void generateDefaultVT(vec3 min, vec3 max);
 		void generateDefaultVN(vec3 min, vec3 size);
+		vec3 calculateCenter();
 };
