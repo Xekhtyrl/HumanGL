@@ -9,6 +9,7 @@
 void processInput(GLFWwindow *window, IModel *object, std::vector<Animation> *anims)
 {
 
+	animate(window, object, anims);
 	if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -23,7 +24,6 @@ void processInput(GLFWwindow *window, IModel *object, std::vector<Animation> *an
 	translationKey(window);
 	scaleAndResetKey(window, object);
 	changeLightSettings(window);
-	animate(window, object, anims);
 }
 
 /**
