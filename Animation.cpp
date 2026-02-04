@@ -95,7 +95,7 @@ void Animation::finishFrame() {
         }
         // printActualPose();
     }
-    }
+}
 
 void Animation::update(float deltaTime) {
     if (playState == PlayState::STOPPED) return;
