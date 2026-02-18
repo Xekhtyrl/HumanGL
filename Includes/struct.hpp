@@ -31,7 +31,6 @@ struct Material {
     std::string mapKdPath; // diffuse texture file path
     std::string mapKsPath; // specular texture
     std::string mapBumpPath; // normal/bump map
-
 };
 
 struct Setup {

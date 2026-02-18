@@ -16,7 +16,7 @@ class Mesh {
 		Mesh(const Mesh& oth);
         Mesh& operator=(const Mesh& oth);
 
-		void Draw(Shader &shader, Material material, mat4 transfrom, vec3 pivot);
+		void Draw(Shader &shader, mat4 transfrom, vec3 pivot);
 		void setupMesh(vec3 min, vec3 size);
 
 		//getters
@@ -34,6 +34,7 @@ class Mesh {
 		const GLuint& EBO() const;
 		bool vnPresent() const;
 		bool vtPresent() const;
+		Material& material();
 
 		//setters
         void vertices(std::vector<Vertex>& vertices);
@@ -42,7 +43,7 @@ class Mesh {
         void name(std::string name);
 		void vnPresent(bool present);
 		void vtPresent(bool present);
-		vec3 center() const;
+		void material(const Material& mat);
 
     private:
 		        // mesh data
@@ -50,6 +51,7 @@ class Mesh {
         std::vector<Vertex>			_vertices;
         std::vector<unsigned int>	_indices;
         std::string                 _materialName;
+		Material					_material;
 		bool						_vnPresent = false;
 		bool						_vtPresent = false;
 		GLuint 						_VAO;

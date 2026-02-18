@@ -68,7 +68,7 @@ void setup_callback(GLFWwindow* window, int key, int scancode, int action, int m
 //window.cpp
 GLFWwindow* initWindow(std::string name);
 void initImgui(GLFWwindow* window);
-void createUIImgui();
+void createUIImgui(IModel* object);
 
 //animation.cpp
 std::vector<Animation> loadAnimations(const std::string& filepath);

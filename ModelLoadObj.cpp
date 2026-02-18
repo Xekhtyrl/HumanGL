@@ -80,6 +80,7 @@ void HierarchicModel::usemtl(std::stringstream& ss, Mesh& currentMesh, std::stri
 		throw std::runtime_error("Error: Material not found in .mtl file: " + matName);
 	}
 	currentMesh.materialName(matName);
+	currentMesh.material(materials[matName]);
 	prevMat = matName;
 }
 
@@ -87,7 +88,7 @@ void HierarchicModel::usemtl(std::stringstream& ss, Mesh& currentMesh, std::stri
 ///
 /// Parse each point in 3 variables (Position, Texture, and Normal indices), rebase each index, check if Vertex already in cache for duplicates and push it to the Mesh indices.
 /// Final part handles non triangle faces by adding more triangle faces index for each additional points.
-/// @param ss coucou
+/// @param ss reference of the stringstream of the current line parsed
 /// @param temp_v reference of vector with all position (v) point parsed yet
 /// @param temp_vt reference of vector with all texture (vt) point parsed yet
 /// @param temp_vn reference of vector with all Normal (vn) point parsed yet
@@ -271,20 +272,14 @@ void HierarchicModel::loadSkeleton(const std::string& path) {
 
 		if ((type.find('{') != std::string::npos || type.find('}') != std::string::npos) && type.size() < 3)
 			continue;
-		// std::cout << type << std::endl;
 		if (type.find("pivot") != std::string::npos){
-			    // Skip until '['
 			ss.ignore(std::numeric_limits<std::streamsize>::max(), '[');
 
-			// Read numbers
 			ss >> obj->pivotInit[0];
-			ss.ignore(1); // skip ','
+			ss.ignore(1);
 			ss >> obj->pivotInit[1];
-			ss.ignore(1); // skip ','
+			ss.ignore(1);
 			ss >> obj->pivotInit[2];
-			// std::cout << obj->pivotLocal[0] << " "
-			// 		<< obj->pivotLocal[1] << " "
-			// 		<< obj->pivotLocal[2] << "\n";
 		}
 		else if (type.find("children") != std::string::npos) {
 			std::string val;
@@ -292,9 +287,7 @@ void HierarchicModel::loadSkeleton(const std::string& path) {
 			std::vector<std::string> arr;
 
 			ss.ignore(std::numeric_limits<std::streamsize>::max(), '[');
-			while (ss >> val) {
-				// prev = val;
-				
+			while (ss >> val) {				
 				strTrim(val, ":,[]\"");
 				ss.ignore(1);
 				arr.push_back(val);

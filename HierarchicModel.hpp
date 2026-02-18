@@ -35,6 +35,7 @@ struct ModelNode {
 	mat4 localTransform = vml::identity<float, 4>();
 	mat4 globalTransform = vml::identity<float, 4>();
 	Mesh* mesh;
+	bool selected = false;
 
 	std::vector<std::string> children;
 	std::string parent;
@@ -78,6 +79,7 @@ class HierarchicModel : public IModel
 				return model.nodes[name];
 			return nullptr;
 		}
+		MStruct& getModel() {return model;}
 
 		void resetModel();
 	private:

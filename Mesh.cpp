@@ -8,7 +8,8 @@ Mesh::Mesh(const Mesh& oth)
 	: _name(oth._name),
 	_vertices(oth._vertices),
 	_indices(oth._indices),
-	_materialName(oth._materialName) {
+	_materialName(oth._materialName),
+	_material(oth._material) {
 	_VAO = oth._VAO;
 	_VBO = oth._VBO;
 	_EBO = oth._EBO;
@@ -23,14 +24,14 @@ Mesh& Mesh::operator=(const Mesh& oth) {
 		_vertices = oth._vertices;
 		_indices = oth._indices;
 		_materialName = oth._materialName;
+		_material = oth._material;
 	}
 	return *this;
 }
 
 /// @brief draw function that check viewmode to adapt, set textures and other values and send it to the shader (fragment shader mostly)
 /// @param shader program shader linked to the model
-/// @param material structure linked to the Mesh that contain the details from the mtl
-void Mesh::Draw(Shader &shader, Material material, mat4 transform, vec3 pivot) {
+void Mesh::Draw(Shader &shader, mat4 transform, vec3 pivot) {
 	(void)pivot;
 	shader.use();
 	glBindVertexArray(_VAO);
@@ -55,11 +56,11 @@ void Mesh::Draw(Shader &shader, Material material, mat4 transform, vec3 pivot) {
 	shader.setMat("transform", transform.data);
 
 	// scalar uniforms
-	shader.setVec3("material.ambient",        material.ambient);
-	shader.setVec3("material.diffuseColor",   material.diffuse);
-	shader.setVec3("material.specularColor",  material.specular);
-	shader.setFloat("material.shininess",     material.shininess);
-	shader.setFloat("material.opacity",       material.opacity);
+	shader.setVec3("material.ambient",        _material.ambient);
+	shader.setVec3("material.diffuseColor",   _material.diffuse);
+	shader.setVec3("material.specularColor",  _material.specular);
+	shader.setFloat("material.shininess",     _material.shininess);
+	shader.setFloat("material.opacity",       _material.opacity);
 
 	// light
 	shader.setVec3("lightPos", setup.lightPos);
@@ -134,6 +135,7 @@ const GLuint& Mesh::VBO() const { return _VBO; }
 const GLuint& Mesh::EBO() const { return _EBO; }
 bool Mesh::vnPresent() const {return _vnPresent;}
 bool Mesh::vtPresent() const {return _vtPresent;}
+Material& Mesh::material() {return _material;}
 
 //setters
 void Mesh::vertices(std::vector<Vertex>& vertices) {_vertices = vertices;}
@@ -142,6 +144,9 @@ void Mesh::materialName(std::string matName) {_materialName = matName;}
 void Mesh::name(std::string name) {_name = name;}
 void Mesh::vnPresent(bool present) {_vnPresent = present;}
 void Mesh::vtPresent(bool present) {_vtPresent = present;}
+void Mesh::material(const Material& mat) {
+	_material = mat;
+}
 
 /**
  * @brief Generates UVs (Texture Coordonate) using cubic projection based on the dominant normal axis.
@@ -241,6 +246,5 @@ vec3 Mesh::calculateCenter() {
 		center[1] /= count;
 		center[2] /= count;
 	}
-	std::cout << "Calculated center: [" << center[0] << ", " << center[1] << ", " << center[2] << "]" << std::endl;
 	return center;
 }

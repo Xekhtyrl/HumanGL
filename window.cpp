@@ -36,18 +36,7 @@ void initImgui(GLFWwindow* window) {
 	ImGui_ImplOpenGL3_Init("#version 330");
 }
 
-/**
- * @brief create and draw Imgui frame on the window and fill it with the details of the program
- * 
- * Give details on the view mode activated, the light parameter and the legend on the controls
- */
-void createUIImgui(){
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
-	
-	// ImGui::SetNextWindowSize(ImVec2(SCR_WIDTH / 5, 0), ImGuiCond_Always);
-	// ImGui::GetStyle().FontScaleMain = 0.8f;
+void legendUI() {
 	ImGui::Begin("Settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 	
 	ImGui::SliderFloat("Scale", &setup.scaleFactor, 0.1f, 10.0f);
@@ -77,8 +66,77 @@ void createUIImgui(){
 	ImGui::TextColored({0.7,0.1,0,1} ,"Quit (Esc)\n");
 
 	ImGui::End();
+}
+
+void applyNewColorToSelectedParts(HierarchicModel* model, float color[3]) {
+	for (const auto& partName : model->getModel().order) {
+		MNode* node = model->getNode(partName);
+		if (node && node->selected && node->mesh) {
+			node->mesh->material().diffuse = {color[0], color[1], color[2]};
+			node->mesh->material().ambient = {color[0], color[1], color[2]};
+		}
+	}
+}
+
+void applyNewScaleToSelectedParts(HierarchicModel* model, float scaleFactor) {
+	for (const auto& partName : model->getModel().order) {
+		MNode* node = model->getNode(partName);
+		if (node && node->selected) {
+			node->globalTransform *= vml::scale(vec3{scaleFactor, scaleFactor, scaleFactor});
+		}
+	}
+}
+
+void bodyPartUI(IModel* object) {
+	HierarchicModel* hierModel = dynamic_cast<HierarchicModel*>(object);
+	if (!hierModel) return;
+	ImGui::Begin("Body Part Selection", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+	std::vector<std::string> bodyParts = hierModel->getModel().order;
+	ImGui::Text("Select a body part to modify its details:");
+	if (ImGui::CollapsingHeader("Body Parts"))
+	{
+		for (const auto& part : bodyParts) {
+			ImGui::Selectable(part.c_str(), &hierModel->getNode(part)->selected);
+		}
+	}
+	ImGui::Text("Change selected parts color (R, G, B):");
+	static float color[3] = {0.0f, 1.0f, 1.0f};
+	ImGui::ColorEdit3("Part Color", color);
+	applyNewColorToSelectedParts(hierModel, color);
+	static double scaleFactor = 1.0f;
+	ImGui::Text("Scale: %.3f", scaleFactor);
+
+	if (ImGui::Button("-"))
+	{
+		scaleFactor = 9.0f / 10.0f;
+		applyNewScaleToSelectedParts(hierModel, scaleFactor);
+	}
+
+	ImGui::SameLine();
+
+	if (ImGui::Button("+"))
+	{
+		scaleFactor = 10.0f / 9.0f;
+		applyNewScaleToSelectedParts(hierModel, scaleFactor);
+	}
+	ImGui::End();
+}
+
+/**
+ * @brief create and draw Imgui frame on the window and fill it with the details of the program
+ * 
+ * Give details on the view mode activated, the light parameter and the legend on the controls
+ */
+void createUIImgui(IModel* object) {
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+	
+	// ImGui::SetNextWindowSize(ImVec2(SCR_WIDTH / 5, 0), ImGuiCond_Always);
+	// ImGui::GetStyle().FontScaleMain = 0.8f;
+	legendUI();
+	bodyPartUI(object);
 
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
 }

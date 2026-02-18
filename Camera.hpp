@@ -2,7 +2,6 @@
 
 #include <glad/glad.h>
 #include "Includes/vml.hpp"
-// #include "my_glm.h"
 
 using namespace vml;
 // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods

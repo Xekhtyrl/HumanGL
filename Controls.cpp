@@ -1,5 +1,8 @@
 #include "Includes/header.h"
 #include "Includes/vml.hpp"
+#include "Includes/imgui/imgui.h"
+#include "Includes/imgui/imgui_impl_glfw.h"
+#include "Includes/imgui/imgui_impl_opengl3.h"
 
 
 /**
@@ -34,24 +37,35 @@ void processInput(GLFWwindow *window, IModel *object, std::vector<Animation> *an
  */
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 {
-	float xpos = static_cast<float>(xposIn);
-	float ypos = static_cast<float>(yposIn);
-	
-	if (camera.firstMouse)
-	{
-		glfwSetCursorPos(window, SCR_WIDTH / 2.0, SCR_HEIGHT / 2.0);
-		lastX = xpos;
-		lastY = ypos;
-		camera.firstMouse = false;
-	}
+	ImGui_ImplGlfw_CursorPosCallback(window, xposIn, yposIn);
+	if (ImGui::GetIO().WantCaptureMouse)
+        return;
 
-	float xoffset = xpos - lastX;
-	float yoffset = lastY - ypos;
+    float xpos = static_cast<float>(xposIn);
+    float ypos = static_cast<float>(yposIn);
 
-	lastX = xpos;
-	lastY = ypos;
+    if (camera.firstMouse)
+    {
+        lastX = xpos;
+        lastY = ypos;
+        camera.firstMouse = false;
+    }
 
-	camera.ProcessMouseMovement(xoffset, yoffset);
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos;
+
+    lastX = xpos;
+    lastY = ypos;
+
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+    {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        camera.ProcessMouseMovement(xoffset, yoffset);
+    }
+    else
+    {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
 }
 
 /**
@@ -219,24 +233,6 @@ void scaleAndResetKey(GLFWwindow *window, IModel *object) {
 	}
 	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS){
 		setBaseModelMatrix(window, object);
-	}
-	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS){
-		HierarchicModel* modelPtr = dynamic_cast<HierarchicModel*>(object);
-		if (modelPtr){
-			std::cout << "pivot before scale upperArm_L: " << modelPtr->getNode("upperArm_L")->pivotLocal[0] << ", "
-					  << modelPtr->getNode("upperArm_L")->pivotLocal[1] << ", "
-					  << modelPtr->getNode("upperArm_L")->pivotLocal[2] << std::endl;
-			modelPtr->getNode("upperArm_L")->localTransform *= scale(vec3{10. / 9.,10. / 9.,10. / 9.});
-			std::cout << "pivot after scale upperArm_L: " << modelPtr->getNode("upperArm_L")->pivotLocal[0] << ", "
-					  << modelPtr->getNode("upperArm_L")->pivotLocal[1] << ", "
-					  << modelPtr->getNode("upperArm_L")->pivotLocal[2] << std::endl;
-		}
-	}
-	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS){
-		HierarchicModel* modelPtr = dynamic_cast<HierarchicModel*>(object);
-		if (modelPtr){
-			modelPtr->getNode("upperArm_L")->localTransform *= scale(vec3{0.9,0.9,0.9});
-		}
 	}
 }
 

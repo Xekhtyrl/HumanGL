@@ -58,7 +58,7 @@ void renderLoop(GLFWwindow *window, Shader& shader, IModel* object, std::vector<
 		
 		object->Draw(shader);
 		
-		createUIImgui();
+		createUIImgui(object);
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 		
@@ -80,7 +80,7 @@ void setupOpenGL(GLFWwindow *window) {
 	glfwSetKeyCallback(window, setup_callback);
 
 	// tell GLFW to capture our mouse
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 	// Make window visible before setting cursor
 	glfwShowWindow(window);
 
@@ -151,9 +151,8 @@ int main(int argc, char **argv)
 		log << "Shader created Successfully" << std::endl;
 		// Create Model here
 		IModel *object = new HierarchicModel(obj.c_str());
-		printf("min: %f, %f, %f\n", object->min().data[0], object->min().data[1], object->min().data[2]);
-		// object->min = object->min() - vec3{0.1f, 0.1f, 0.1f};
-		log << "Kodel created Successfully" << std::endl;
+	
+		log << "Model created Successfully" << std::endl;
 		std::vector<Animation> anims = loadAnimations("Ressources/Movement.json");
 		setBaseModelMatrix(window, object);
 		renderLoop(window, shad, object, &anims);
