@@ -22,7 +22,6 @@ void Animation::print() const {
 
 
 void Animation::convertToKeyframes(PlayState state, ParseTransitionPose transitionPose) {
-    dprintf(1, "Converting to keyframes...\n");
     pl[state].duration = transitionPose.duration;
     for (const auto& [boneName, keyframesList] : transitionPose.tracks) {
         for (const auto& keyframesMap : keyframesList) {
@@ -39,29 +38,6 @@ void Animation::convertToKeyframes(PlayState state, ParseTransitionPose transiti
     }
 }
 
-// void Animation::printKeyframes() const {
-//     std::cout << "Keyframes:\n";
-//     for (const auto& [time, boneMap] : keyframes) {
-//         std::cout << "  Time: " << time << "\n";
-//         for (const auto& [boneName, values] : boneMap) {
-//             std::cout << "    Bone: " << boneName << " -> Values: (" 
-//                         << values[0] << ", " 
-//                         << values[1] << ", " 
-//                         << values[2] << ")\n";
-//         }
-//     }
-// }
-
-// void Animation::printActualPose() const {
-//     std::cout << "Actual Pose:\n";
-//     for (const auto& [boneName, values] : actualPose) {
-//         std::cout << "    Bone: " << boneName << " -> Values: (" 
-//                     << values[0] << ", " 
-//                     << values[1] << ", " 
-//                     << values[2] << ")\n";
-//     }
-// }
-
 void Animation::flipflop() {
     if (playState == PlayState::LOOP) {
         nextState = PlayState::FINISH;
@@ -73,7 +49,6 @@ void Animation::flipflop() {
         nextState = PlayState::LOOP;
         updateActualPose(0.0f);
     }
-    // print();
 }
 
 void Animation::finishFrame() {
@@ -88,20 +63,12 @@ void Animation::finishFrame() {
         nextState = PlayState::LOOP;
     actualPose = {};
     updateActualPose(currentFrameTime);
-    // auto it = pl[playState].keyframes.find(currentFrameTime);
-    // if (it != pl[playState].keyframes.end()) {
-    //     for (const auto& [boneName, values] : it->second) {
-    //         // printf("Setting bone: %s to values (%f, %f, %f), time is %f\n", boneName.c_str(), values[0], values[1], values[2], currentFrameTime);
-    //         actualPose[boneName] = values;
-    //     }
-    //     // printActualPose();
-    // }
 }
 
 void Animation::updateActualPose(float frameTime) {
     auto it = pl[playState].keyframes.find(frameTime);
     if (it != pl[playState].keyframes.end()) {
-        printf("Updating actual pose for frame time: %f\n", frameTime);
+        // printf("Updating actual pose for frame time: %f\n", frameTime);
         for (const auto& [boneName, values] : it->second) {
             // printf("Updating actual pose for bone: %s to values (%f, %f, %f), time is %f\n", boneName.c_str(), values[0], values[1], values[2], currentFrameTime);
             actualPose[boneName] = values;
@@ -137,11 +104,5 @@ void Animation::update(float deltaTime) {
     if (currentTime >= nextIt->first) {
         updateActualPose(nextIt->first);
         currentFrameTime = nextIt->first;
-        // currentFrameTime = nextIt->first;
-        // for (const auto& [boneName, values] : nextIt->second) {
-        //     printf("Setting bone: %s to values (%f, %f, %f), time is %f\n", boneName.c_str(), values[0], values[1], values[2], currentFrameTime);
-        //     actualPose[boneName] = values;
-        // }
-        // printActualPose();
     }
 }

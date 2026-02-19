@@ -42,24 +42,15 @@ struct ModelNode {
 	vec3 translation = {0,0,0};
 
 	void updateLocalMatrix() {
-		// localMatrix = vml::identity<float, 4>();
-
-    localMatrix =
-        vml::translation(vml::identity<float, 4>(), translation) *
-        vml::translation(vml::identity<float, 4>(), pivot) *
-        vml::rotation(radians(rotation[0]), vec3{1,0,0}) *
-        vml::rotation(radians(rotation[1]), vec3{0,1,0}) *
-        vml::rotation(radians(rotation[2]), vec3{0,0,1}) *
-        vml::scale(scale) *
-        vml::translation(vml::identity<float, 4>(), -pivot);
-    // localMatrix = vml::identity<float, 4>();
-    // localMatrix = localMatrix * vml::translation(vml::identity<float, 4>(), pivot * -1.0f);
-    // localMatrix = localMatrix * vml::rotation(radians(rotation[0]), vec3{1, 0, 0});
-    // localMatrix = localMatrix * vml::rotation(radians(rotation[1]), vec3{0, 1, 0});
-    // localMatrix = localMatrix * vml::rotation(radians(rotation[2]), vec3{0, 0, 1});
-    // localMatrix = localMatrix * vml::scale(scale);
-    // localMatrix = localMatrix * vml::translation(vml::identity<float, 4>(), pivot * -1.0f);
-}
+		localMatrix =
+			vml::translation(vml::identity<float, 4>(), translation) *
+			vml::translation(vml::identity<float, 4>(), pivot) *
+			vml::rotation(radians(rotation[0]), vec3{1,0,0}) *
+			vml::rotation(radians(rotation[1]), vec3{0,1,0}) *
+			vml::rotation(radians(rotation[2]), vec3{0,0,1}) *
+			vml::scale(scale) *
+			vml::translation(vml::identity<float, 4>(), -pivot);
+	}
 
 	ModelNode(const std::string _name) : name(_name) {}
 } typedef MNode;

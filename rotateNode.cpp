@@ -5,8 +5,7 @@ void rotateNode(MNode* node, vec3 angles)
 {
     if (node->name == "torso") {
         node->translation[0] += angles[0];
-        // if (node->translation[1] + angles[1] > -1)
-            node->translation[1] += angles[1];
+        node->translation[1] += angles[1];
         node->translation[2] += angles[2];
         node->updateLocalMatrix();
         return;

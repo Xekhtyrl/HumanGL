@@ -82,7 +82,13 @@ void applyNewScaleToSelectedParts(HierarchicModel* model, float scaleFactor) {
 	for (const auto& partName : model->getModel().order) {
 		MNode* node = model->getNode(partName);
 		if (node && node->selected) {
-			node->globalTransform *= vml::scale(vec3{scaleFactor, scaleFactor, scaleFactor});
+			node->scale *= scaleFactor;
+			node->updateLocalMatrix();
+			// Draw
+			updateNodeWorldMatrixModel(model, model->getNode("torso"));
+
+			printf("New scale for %s: %f, %f, %f\n", partName.c_str(), node->scale[0], node->scale[1], node->scale[2]);
+			// node->globalTransform *= vml::scale(vec3{scaleFactor, scaleFactor, scaleFactor});
 		}
 	}
 }

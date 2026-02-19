@@ -321,29 +321,6 @@ void HierarchicModel::loadSkeleton(const std::string& path) {
 		}
 	}
 
-	// for (auto& nodeEntry : model.nodes) {
-	// 	MNode* node = nodeEntry.second;
-	// 	if (node->parent != "")
-	// 	{
-	// 		vml::mat4 parentWorldTransform = model.nodes[node->parent]->worldMatrix;
-	// 		// parentWorldTransform = translation(parentWorldTransform, node->pivot);
-	// 		printf("node parent position: ");
-	// 		parentWorldTransform.print();
-	// 		// vml::mat4 invParentWorld = inverse(parentWorldTransform);
-
-	// 		vml::vec4 pivotW(node->pivot, 1.0f);
-	// 		pivotW -= vml::vec4(model.nodes[node->parent]->pivot, 1.0f);
-	// 		printf("Node %s pivotW: %f, %f, %f, %f\n", node->name.c_str(), pivotW[0], pivotW[1], pivotW[2], pivotW[3]);
-	// 		// vml::vec4 pivotL = invParentWorld * pivotW;
-	// 		// printf("Node %s pivotL: %f, %f, %f, %f\n", node->name.c_str(), pivotL[0], pivotL[1], pivotL[2], pivotL[3]);
-	// 		node->pivot = vml::vec3({pivotW[0], pivotW[1], pivotW[2]});
-	// 	}
-	// 	else
-	// 	{
-	// 		node->pivot = node->pivot;
-	// 	}
-	// }
-
 	checkLink(model, model.nodes[model.order[0]], std::deque<std::string>());
 	// printGraph(final, final.nodes[final.order[0]]);
 }
@@ -359,7 +336,7 @@ void HierarchicModel::computeLocalPivots(
 			node->translation = node->pivot;
 			node->updateLocalMatrix();
 
-			printf("Node %s local pivot: %f, %f, %f\n", name.c_str(), node->pivot[0], node->pivot[1], node->pivot[2]);
+			// printf("Node %s local pivot: %f, %f, %f\n", name.c_str(), node->pivot[0], node->pivot[1], node->pivot[2]);
 		}
 	}
 }

@@ -107,9 +107,9 @@ void loadSkeleton(const std::string& path) {
 
 			// Read numbers
 			ss >> obj->pivot[0];
-			ss.ignore(1); // skip ','
+			ss.ignore(1);
 			ss >> obj->pivot[1];
-			ss.ignore(1); // skip ','
+			ss.ignore(1);
 			ss >> obj->pivot[2];
 
 			// std::cout << obj->pivot[0] << " "

@@ -167,14 +167,6 @@ void animate(GLFWwindow *window, IModel *object, std::vector<Animation> *anims) 
 				printf("Animation %s stopped and bones reset.\n", anim.state.c_str());
 			}
 			else {
-				// auto it = anim.pl[anim.playState].keyframes.find(anim.currentFrameTime);
-				// if (it != anim.pl[anim.playState].keyframes.end()) {
-				// 	for (const auto& [boneName, values] : it->second) {
-				// 		// printf("Animating bone: %s with values (%f, %f, %f)\n", boneName.c_str(), values[0], values[1], values[2]);
-				// 		MNode* bone = modelPtr->getNode(boneName);
-				// 		rotateNode(bone, values);
-				// 	}
-				// }
 				for (const auto& [boneName, values] : anim.actualPose) {
 					// printf("Applying actual pose to bone: %s with values (%f, %f, %f)\n", boneName.c_str(), values[0], values[1], values[2]);
 					MNode* bone = modelPtr->getNode(boneName);
@@ -249,19 +241,19 @@ void scaleAndResetKey(GLFWwindow *window, IModel *object) {
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS){
 		HierarchicModel* modelPtr = dynamic_cast<HierarchicModel*>(object);
 		if (modelPtr){
-			std::cout << "pivot before scale upperArm_L: " << modelPtr->getNode("upperArm_L")->pivotLocal[0] << ", "
-					  << modelPtr->getNode("upperArm_L")->pivotLocal[1] << ", "
-					  << modelPtr->getNode("upperArm_L")->pivotLocal[2] << std::endl;
-			modelPtr->getNode("upperArm_L")->localTransform *= scale(vec3{10. / 9.,10. / 9.,10. / 9.});
-			std::cout << "pivot after scale upperArm_L: " << modelPtr->getNode("upperArm_L")->pivotLocal[0] << ", "
-					  << modelPtr->getNode("upperArm_L")->pivotLocal[1] << ", "
-					  << modelPtr->getNode("upperArm_L")->pivotLocal[2] << std::endl;
+			// std::cout << "pivot before scale upperArm_L: " << modelPtr->getNode("upperArm_L")->pivot[0] << ", "
+			// 		  << modelPtr->getNode("upperArm_L")->pivot[1] << ", "
+			// 		  << modelPtr->getNode("upperArm_L")->pivot[2] << std::endl;
+			// modelPtr->getNode("upperArm_L")->scale *= scale(vec3{10. / 9.,10. / 9.,10. / 9.});
+			// std::cout << "pivot after scale upperArm_L: " << modelPtr->getNode("upperArm_L")->pivot[0] << ", "
+			// 		  << modelPtr->getNode("upperArm_L")->pivot[1] << ", "
+			// 		  << modelPtr->getNode("upperArm_L")->pivot[2] << std::endl;
 		}
 	}
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS){
 		HierarchicModel* modelPtr = dynamic_cast<HierarchicModel*>(object);
 		if (modelPtr){
-			modelPtr->getNode("upperArm_L")->localTransform *= scale(vec3{0.9,0.9,0.9});
+			// modelPtr->getNode("upperArm_L")->localTransform *= scale(vec3{0.9,0.9,0.9});
 		}
 	}
 }

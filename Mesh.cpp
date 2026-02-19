@@ -33,7 +33,6 @@ Mesh& Mesh::operator=(const Mesh& oth) {
 /// @param shader program shader linked to the model
 /// @param material structure linked to the Mesh that contain the details from the mtl
 void Mesh::Draw(Shader &shader, mat4 transform) {
-	(void)pivot;
 	shader.use();
 	glBindVertexArray(_VAO);
 	if (setup.showLines){
