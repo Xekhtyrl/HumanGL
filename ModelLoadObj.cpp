@@ -226,13 +226,21 @@ void HierarchicModel::loadModel(std::string path) {
 	}
 
 	finishAndResetMesh(currentMesh, prevMat, cache, false);
-
+	
 	file.close();
+
+	std::map<std::string, vml::vec3> worldPivots;
+		for (auto& [name, node] : model.nodes) {
+			worldPivots[name] = node->pivot;
+		}
+	convertMeshToLocalSpace(worldPivots);
+	computeLocalPivots(worldPivots);
+	updateNodeWorldMatrixModel(this, getNode("torso"));
 }
 
 void HierarchicModel::printGraph(MStruct& obj, MNode *node) {
 	std::cout << node->name << std::endl;
-	std::cout << "\tpivot: " << node->pivotWorld << std::endl;;
+	std::cout << "\tpivot: " << node->pivot << std::endl;;
 	if (node->children.size()) {
 		std::cout << "\tchildren: ";
 		for (auto& x: node->children)
@@ -275,11 +283,12 @@ void HierarchicModel::loadSkeleton(const std::string& path) {
 		if (type.find("pivot") != std::string::npos){
 			ss.ignore(std::numeric_limits<std::streamsize>::max(), '[');
 
-			ss >> obj->pivotInit[0];
+			// Read numbers
+			ss >> obj->pivot[0];
 			ss.ignore(1);
-			ss >> obj->pivotInit[1];
+			ss >> obj->pivot[1];
 			ss.ignore(1);
-			ss >> obj->pivotInit[2];
+			ss >> obj->pivot[2];
 		}
 		else if (type.find("children") != std::string::npos) {
 			std::string val;
@@ -312,29 +321,61 @@ void HierarchicModel::loadSkeleton(const std::string& path) {
 		}
 	}
 
-	for (auto& nodeEntry : model.nodes) {
-		MNode* node = nodeEntry.second;
-		if (node->parent != "")
-		{
-			vml::mat4 parentWorldTransform = model.nodes[node->parent]->globalTransform;
-			// parentWorldTransform = translation(parentWorldTransform, node->pivotWorld);
-			printf("node parent position: ");
-			parentWorldTransform.print();
-			// vml::mat4 invParentWorld = inverse(parentWorldTransform);
+	// for (auto& nodeEntry : model.nodes) {
+	// 	MNode* node = nodeEntry.second;
+	// 	if (node->parent != "")
+	// 	{
+	// 		vml::mat4 parentWorldTransform = model.nodes[node->parent]->worldMatrix;
+	// 		// parentWorldTransform = translation(parentWorldTransform, node->pivot);
+	// 		printf("node parent position: ");
+	// 		parentWorldTransform.print();
+	// 		// vml::mat4 invParentWorld = inverse(parentWorldTransform);
 
-			vml::vec4 pivotW(node->pivotInit, 1.0f);
-			pivotW -= vml::vec4(model.nodes[node->parent]->pivotInit, 1.0f);
-			printf("Node %s pivotW: %f, %f, %f, %f\n", node->name.c_str(), pivotW[0], pivotW[1], pivotW[2], pivotW[3]);
-			// vml::vec4 pivotL = invParentWorld * pivotW;
-			// printf("Node %s pivotL: %f, %f, %f, %f\n", node->name.c_str(), pivotL[0], pivotL[1], pivotL[2], pivotL[3]);
-			node->pivotLocal = vml::vec3({pivotW[0], pivotW[1], pivotW[2]});
-		}
-		else
-		{
-			node->pivotLocal = node->pivotInit;
-		}
-	}
+	// 		vml::vec4 pivotW(node->pivot, 1.0f);
+	// 		pivotW -= vml::vec4(model.nodes[node->parent]->pivot, 1.0f);
+	// 		printf("Node %s pivotW: %f, %f, %f, %f\n", node->name.c_str(), pivotW[0], pivotW[1], pivotW[2], pivotW[3]);
+	// 		// vml::vec4 pivotL = invParentWorld * pivotW;
+	// 		// printf("Node %s pivotL: %f, %f, %f, %f\n", node->name.c_str(), pivotL[0], pivotL[1], pivotL[2], pivotL[3]);
+	// 		node->pivot = vml::vec3({pivotW[0], pivotW[1], pivotW[2]});
+	// 	}
+	// 	else
+	// 	{
+	// 		node->pivot = node->pivot;
+	// 	}
+	// }
 
 	checkLink(model, model.nodes[model.order[0]], std::deque<std::string>());
 	// printGraph(final, final.nodes[final.order[0]]);
+}
+
+
+void HierarchicModel::computeLocalPivots(
+	std::map<std::string, vml::vec3>& worldPivots
+) {
+	// Convert each pivot to local space (offset from parent's world pivot)
+	for (auto& [name, node] : model.nodes) {
+		if (!node->parent.empty()) {
+			node->pivot = worldPivots[name] - worldPivots[node->parent];
+			node->translation = node->pivot;
+			node->updateLocalMatrix();
+
+			printf("Node %s local pivot: %f, %f, %f\n", name.c_str(), node->pivot[0], node->pivot[1], node->pivot[2]);
+		}
+	}
+}
+
+void HierarchicModel::convertMeshToLocalSpace(
+    std::map<std::string, vml::vec3>& worldPivots)
+{
+    for (auto& [name, node] : model.nodes) {
+        if (!node->mesh) continue;
+
+        vml::vec3 pivotWorld = worldPivots.at(name);
+
+        for (auto& vertex : node->mesh->vertices()) {
+            vertex.Position -= pivotWorld;
+        }
+
+        node->mesh->setupMesh(_min, _max - _min);
+    }
 }

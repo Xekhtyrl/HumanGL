@@ -150,6 +150,13 @@ namespace vml {
 			};
 		}
 
+		Vector<T, N> operator-() const {
+			Vector<T, N> res;
+			for (size_t i = 0; i < N; i++)
+				res[i] = -data[i];
+			return res;
+		}
+
 		// getter
 		constexpr size_t size() {return N;}
 

@@ -47,7 +47,7 @@ INCLUDES  := -I$(INC) \
 
 LIBS      := -L$(HOME_LIB) \
              -Wl,-rpath,$(HOME_LIB) \
-             -lglfw3 -ldl -lGL -lpthread -lX11
+             -lglfw -ldl -lGL -lpthread -lX11
 
 all: $(NAME)
 
