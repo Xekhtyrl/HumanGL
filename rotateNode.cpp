@@ -1,38 +1,42 @@
 #include "Includes/header.h"
 
-void frameGlobalTransform(HierarchicModel* modelPtr, MNode* node) {
-    if (!node->parent.empty()) {
-        vml::mat4 parentGlobalTransform = modelPtr->getNode(node->parent)->globalTransform;	
-        node->globalTransform = parentGlobalTransform * node->localTransform;
-    }
-    else
-        node->globalTransform = node->localTransform;
-}
 
-void frameChildTransforms(HierarchicModel* modelPtr, MNode* node) {
-    for (const std::string& childName : node->children) {
-        MNode* childNode = modelPtr->getNode(childName);
-        frameGlobalTransform(modelPtr, childNode);
-        vml::vec4 pivotWorldHomogeneous = childNode->globalTransform * vml::vec4(childNode->pivotLocal, 1.0f);
-        childNode->pivotWorld = vml::vec3({pivotWorldHomogeneous[0], pivotWorldHomogeneous[1], pivotWorldHomogeneous[2]});
-        frameChildTransforms(modelPtr, childNode);
-    }
-}
-
-void rotateNode(IModel* object, MNode* node, vec3 angles)
+void rotateNode(MNode* node, vec3 angles)
 {
-    HierarchicModel* modelPtr = dynamic_cast<HierarchicModel*>(object);
+    if (node->name == "torso") {
+        node->translation[0] += angles[0];
+        // if (node->translation[1] + angles[1] > -1)
+            node->translation[1] += angles[1];
+        node->translation[2] += angles[2];
+        node->updateLocalMatrix();
+        return;
+    }
+    node->rotation[0] += angles[0];
+    node->rotation[1] += angles[1];
+    node->rotation[2] += angles[2];
+    node->updateLocalMatrix();
+}
+
+void updateNodeWorldMatrix(HierarchicModel* modelPtr, MNode* node) {
     if (!modelPtr || !node)
         return;
+    if (!node->parent.empty()) {
+        vml::mat4 parentworldMatrix = modelPtr->getNode(node->parent)->worldMatrix;	
+        node->worldMatrix = parentworldMatrix * node->localMatrix ;
+    }
+    else
+        node->worldMatrix = node->localMatrix;
 
-    // Appliquer les rotations sur chaque axe (X, Y, Z)
-    if (angles[0] != 0.0f)
-        node->localTransform = rotation_pivot(radians(angles[0]), vec3{1, 0, 0}, node->pivotLocal) * node->localTransform;
-    if (angles[1] != 0.0f)
-        node->localTransform = rotation_pivot(radians(angles[1]), vec3{0, 1, 0}, node->pivotLocal) * node->localTransform;
-    if (angles[2] != 0.0f)
-        node->localTransform = rotation_pivot(radians(angles[2]), vec3{0, 0, 1}, node->pivotLocal) * node->localTransform;
+    for (const std::string& childName : node->children) {
+        MNode* childNode = modelPtr->getNode(childName);
+        updateNodeWorldMatrix(modelPtr, childNode);
+    }
+}
 
-    frameGlobalTransform(modelPtr, node);
-    frameChildTransforms(modelPtr, node);
+void updateNodeWorldMatrixModel(IModel* object, MNode* node) {
+    HierarchicModel* modelPtr = dynamic_cast<HierarchicModel*>(object);
+	if (!modelPtr)
+		return;
+    updateNodeWorldMatrix(modelPtr, node);
+    
 }

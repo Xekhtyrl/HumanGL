@@ -71,6 +71,7 @@ void Animation::flipflop() {
     else if (playState == PlayState::STOPPED) {
         playState = PlayState::START;
         nextState = PlayState::LOOP;
+        updateActualPose(0.0f);
     }
     // print();
 }
@@ -86,14 +87,25 @@ void Animation::finishFrame() {
     if (playState == PlayState::LOOP)
         nextState = PlayState::LOOP;
     actualPose = {};
+    updateActualPose(currentFrameTime);
+    // auto it = pl[playState].keyframes.find(currentFrameTime);
+    // if (it != pl[playState].keyframes.end()) {
+    //     for (const auto& [boneName, values] : it->second) {
+    //         // printf("Setting bone: %s to values (%f, %f, %f), time is %f\n", boneName.c_str(), values[0], values[1], values[2], currentFrameTime);
+    //         actualPose[boneName] = values;
+    //     }
+    //     // printActualPose();
+    // }
+}
 
-    auto it = pl[playState].keyframes.find(currentFrameTime);
+void Animation::updateActualPose(float frameTime) {
+    auto it = pl[playState].keyframes.find(frameTime);
     if (it != pl[playState].keyframes.end()) {
+        printf("Updating actual pose for frame time: %f\n", frameTime);
         for (const auto& [boneName, values] : it->second) {
-            // printf("Setting bone: %s to values (%f, %f, %f)\n", boneName.c_str(), values[0], values[1], values[2]);
+            // printf("Updating actual pose for bone: %s to values (%f, %f, %f), time is %f\n", boneName.c_str(), values[0], values[1], values[2], currentFrameTime);
             actualPose[boneName] = values;
         }
-        // printActualPose();
     }
 }
 
@@ -123,10 +135,13 @@ void Animation::update(float deltaTime) {
     }
 
     if (currentTime >= nextIt->first) {
+        updateActualPose(nextIt->first);
         currentFrameTime = nextIt->first;
-        for (const auto& [boneName, values] : nextIt->second) {
-            actualPose[boneName] = values;
-        }
+        // currentFrameTime = nextIt->first;
+        // for (const auto& [boneName, values] : nextIt->second) {
+        //     printf("Setting bone: %s to values (%f, %f, %f), time is %f\n", boneName.c_str(), values[0], values[1], values[2], currentFrameTime);
+        //     actualPose[boneName] = values;
+        // }
         // printActualPose();
     }
 }

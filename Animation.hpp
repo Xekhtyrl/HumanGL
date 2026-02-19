@@ -36,6 +36,7 @@ struct Animation {
     void convertToKeyframes(PlayState state, ParseTransitionPose transitionPose);
     void print() const;
     void finishFrame();
+    void updateActualPose(float frameTime);
 
     void flipflop();
     void update(float deltaTime);

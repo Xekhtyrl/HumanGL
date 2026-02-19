@@ -167,15 +167,21 @@ void animate(GLFWwindow *window, IModel *object, std::vector<Animation> *anims) 
 				printf("Animation %s stopped and bones reset.\n", anim.state.c_str());
 			}
 			else {
-				auto it = anim.pl[anim.playState].keyframes.find(anim.currentFrameTime);
-				if (it != anim.pl[anim.playState].keyframes.end()) {
-					for (const auto& [boneName, values] : it->second) {
-						// printf("Animating bone: %s with values (%f, %f, %f)\n", boneName.c_str(), values[0], values[1], values[2]);
-						MNode* bone = modelPtr->getNode(boneName);
-						rotateNode(object, bone, values);
-					}
+				// auto it = anim.pl[anim.playState].keyframes.find(anim.currentFrameTime);
+				// if (it != anim.pl[anim.playState].keyframes.end()) {
+				// 	for (const auto& [boneName, values] : it->second) {
+				// 		// printf("Animating bone: %s with values (%f, %f, %f)\n", boneName.c_str(), values[0], values[1], values[2]);
+				// 		MNode* bone = modelPtr->getNode(boneName);
+				// 		rotateNode(bone, values);
+				// 	}
+				// }
+				for (const auto& [boneName, values] : anim.actualPose) {
+					// printf("Applying actual pose to bone: %s with values (%f, %f, %f)\n", boneName.c_str(), values[0], values[1], values[2]);
+					MNode* bone = modelPtr->getNode(boneName);
+					rotateNode(bone, values);
 				}
 			}
+			updateNodeWorldMatrixModel(object, modelPtr->getNode("torso"));
 			break;
 		}
 	}
@@ -184,6 +190,9 @@ void animate(GLFWwindow *window, IModel *object, std::vector<Animation> *anims) 
 	}
 	if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS){
 		anims->at(1).flipflop();
+	}
+	if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS){
+		anims->at(2).flipflop();
 	}
 }
 
@@ -225,6 +234,9 @@ void translationKey(GLFWwindow *window) {
 void scaleAndResetKey(GLFWwindow *window, IModel *object) {
 	if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS){
 		model *= scale(vec3{0.9,0.9,0.9});
+		// vec3 positionToCenter = vec3{0, 0, 0} - model.scale
+		// model = translate(center) * scale(vec3{0.9, 0.9, 0.9}) * translate(-center) * model;
+
 		setup.scaleFactor *= 0.9;
 	}
 	if (glfwGetKey(window, GLFW_KEY_KP_ADD) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS){
@@ -233,6 +245,24 @@ void scaleAndResetKey(GLFWwindow *window, IModel *object) {
 	}
 	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS){
 		setBaseModelMatrix(window, object);
+	}
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS){
+		HierarchicModel* modelPtr = dynamic_cast<HierarchicModel*>(object);
+		if (modelPtr){
+			std::cout << "pivot before scale upperArm_L: " << modelPtr->getNode("upperArm_L")->pivotLocal[0] << ", "
+					  << modelPtr->getNode("upperArm_L")->pivotLocal[1] << ", "
+					  << modelPtr->getNode("upperArm_L")->pivotLocal[2] << std::endl;
+			modelPtr->getNode("upperArm_L")->localTransform *= scale(vec3{10. / 9.,10. / 9.,10. / 9.});
+			std::cout << "pivot after scale upperArm_L: " << modelPtr->getNode("upperArm_L")->pivotLocal[0] << ", "
+					  << modelPtr->getNode("upperArm_L")->pivotLocal[1] << ", "
+					  << modelPtr->getNode("upperArm_L")->pivotLocal[2] << std::endl;
+		}
+	}
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS){
+		HierarchicModel* modelPtr = dynamic_cast<HierarchicModel*>(object);
+		if (modelPtr){
+			modelPtr->getNode("upperArm_L")->localTransform *= scale(vec3{0.9,0.9,0.9});
+		}
 	}
 }
 

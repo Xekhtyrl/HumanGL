@@ -31,7 +31,8 @@ Mesh& Mesh::operator=(const Mesh& oth) {
 
 /// @brief draw function that check viewmode to adapt, set textures and other values and send it to the shader (fragment shader mostly)
 /// @param shader program shader linked to the model
-void Mesh::Draw(Shader &shader, mat4 transform, vec3 pivot) {
+/// @param material structure linked to the Mesh that contain the details from the mtl
+void Mesh::Draw(Shader &shader, mat4 transform) {
 	(void)pivot;
 	shader.use();
 	glBindVertexArray(_VAO);

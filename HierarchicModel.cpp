@@ -62,7 +62,7 @@ HierarchicModel::~HierarchicModel() {
 void HierarchicModel::Draw(Shader &shader) {
 	for (auto& [key, node]: model.nodes) {
 		Mesh *mesh = node->mesh;
-		mesh->Draw(shader, node->globalTransform, node->pivotWorld);
+		mesh->Draw(shader, node->globalTransform);
 	}
 }
 
@@ -181,12 +181,17 @@ void HierarchicModel::convertMtlPath(std::string& mtlpath) {
 }
 
 
-void HierarchicModel::resetModel() {
-			for (const auto& nodeName : model.order) {
-				MNode* node = getNode(nodeName);
-				if (node) {
-					node->globalTransform = vml::identity<float, 4>();
-				}
-				printf("Reset node: %s\n", nodeName.c_str());
-			}
+void HierarchicModel::recursiveReset(MNode* node) {
+	for (auto& child : node->children) {
+		MNode* childNode = getNode(child);
+		if (childNode) {
+			childNode->rotation = {0, 0, 0};
+			childNode->updateLocalMatrix();
+			recursiveReset(childNode);
 		}
+	}
+}
+
+void HierarchicModel::resetModel() {
+	recursiveReset(getNode("torso"));
+}

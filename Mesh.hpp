@@ -16,7 +16,7 @@ class Mesh {
 		Mesh(const Mesh& oth);
         Mesh& operator=(const Mesh& oth);
 
-		void Draw(Shader &shader, mat4 transfrom, vec3 pivot);
+		void Draw(Shader &shader, mat4 transfrom);
 		void setupMesh(vec3 min, vec3 size);
 
 		//getters

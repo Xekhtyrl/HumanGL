@@ -5,10 +5,6 @@
 #include <limits>
 #include <algorithm>
 #include "header.h"
-// #include "Shader.hpp"
-// #include "Mesh.hpp"
-// #include "Includes/vml.hpp"
-// #include "Includes/struct.hpp"
 #include "IModel.hpp"
 
 
@@ -32,17 +28,38 @@ struct VertexKeyHash {
 
 struct ModelNode {
 	std::string name;
-	mat4 localTransform = vml::identity<float, 4>();
-	mat4 globalTransform = vml::identity<float, 4>();
+	mat4 localMatrix = vml::identity<float, 4>();
+	mat4 worldMatrix = vml::identity<float, 4>();
 	Mesh* mesh;
 	bool selected = false;
 
 	std::vector<std::string> children;
 	std::string parent;
 	
-	vec3 pivotInit = {0,0,0};
-	vec3 pivotWorld = {0,0,0};
-	vec3 pivotLocal = {0,0,0};
+	vec3 pivot;
+	vec3 rotation = {0,0,0};
+	vec3 scale = {1,1,1};
+	vec3 translation = {0,0,0};
+
+	void updateLocalMatrix() {
+		// localMatrix = vml::identity<float, 4>();
+
+    localMatrix =
+        vml::translation(vml::identity<float, 4>(), translation) *
+        vml::translation(vml::identity<float, 4>(), pivot) *
+        vml::rotation(radians(rotation[0]), vec3{1,0,0}) *
+        vml::rotation(radians(rotation[1]), vec3{0,1,0}) *
+        vml::rotation(radians(rotation[2]), vec3{0,0,1}) *
+        vml::scale(scale) *
+        vml::translation(vml::identity<float, 4>(), -pivot);
+    // localMatrix = vml::identity<float, 4>();
+    // localMatrix = localMatrix * vml::translation(vml::identity<float, 4>(), pivot * -1.0f);
+    // localMatrix = localMatrix * vml::rotation(radians(rotation[0]), vec3{1, 0, 0});
+    // localMatrix = localMatrix * vml::rotation(radians(rotation[1]), vec3{0, 1, 0});
+    // localMatrix = localMatrix * vml::rotation(radians(rotation[2]), vec3{0, 0, 1});
+    // localMatrix = localMatrix * vml::scale(scale);
+    // localMatrix = localMatrix * vml::translation(vml::identity<float, 4>(), pivot * -1.0f);
+}
 
 	ModelNode(const std::string _name) : name(_name) {}
 } typedef MNode;
@@ -82,6 +99,7 @@ class HierarchicModel : public IModel
 		MStruct& getModel() {return model;}
 
 		void resetModel();
+		void recursiveReset(MNode* node);
 	private:
 		// model data
 		MStruct model;
@@ -104,7 +122,9 @@ class HierarchicModel : public IModel
 		void	printGraph(MStruct& obj, MNode *node);
 		void	checkLink(MStruct& final, MNode* node, std::deque<std::string> visited);
 		void	loadSkeleton(const std::string& path);
-		
+		void	computeLocalPivots(std::map<std::string, vml::vec3>& worldPivots);
+		void	convertMeshToLocalSpace(std::map<std::string, vml::vec3>& worldPivots);
+
 		//loadObj sub functions
 		int		faceLineParse(std::stringstream& ss, std::vector<vec3>& temp_v, std::vector<vec2>& temp_vt,
 					std::vector<vec3>& temp_vn, Mesh& currentMesh, std::unordered_map<VertexKey, unsigned int, VertexKeyHash>& cache);
