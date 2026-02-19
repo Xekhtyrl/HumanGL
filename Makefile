@@ -51,7 +51,8 @@ LIBS      := -L$(HOME_LIB) \
 
 all: $(NAME)
 
-$(NAME): openGL $(OBJ)
+$(NAME): $(OBJ)
+	make openGL
 	$(CXX) $(CXXFLAGS) $(OBJ) $(LIBS) -o $@
 
 # Compile .cpp source files
