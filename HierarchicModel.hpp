@@ -113,8 +113,8 @@ class HierarchicModel : public IModel
 		void	printGraph(MStruct& obj, MNode *node);
 		void	checkLink(MStruct& final, MNode* node, std::deque<std::string> visited);
 		void	loadSkeleton(const std::string& path);
-		void	computeLocalPivots(std::map<std::string, vml::vec3>& worldPivots);
-		void	convertMeshToLocalSpace(std::map<std::string, vml::vec3>& worldPivots);
+		// void	computeLocalPivots(std::map<std::string, vml::vec3>& worldPivots);
+		// void	convertMeshToLocalSpace(std::map<std::string, vml::vec3>& worldPivots);
 
 		//loadObj sub functions
 		int		faceLineParse(std::stringstream& ss, std::vector<vec3>& temp_v, std::vector<vec2>& temp_vt,

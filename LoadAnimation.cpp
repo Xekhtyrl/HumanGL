@@ -112,7 +112,7 @@ std::vector<Animation> loadAnimations(const std::string& filepath) {
     std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 
     std::vector<Animation> animations;
-    printf("Loading animations from %s\n", filepath.c_str());
+    // printf("Loading animations from %s\n", filepath.c_str());
 
     size_t pos = content.find("{");
     if (pos == std::string::npos) return animations;
@@ -140,7 +140,7 @@ std::vector<Animation> loadAnimations(const std::string& filepath) {
         animation.convertToKeyframes(PlayState::LOOP, parseTransitionPose(animContent, "loop"));
         animation.convertToKeyframes(PlayState::FINISH, parseTransitionPose(animContent, "finish"));
 
-        printf("Loaded animation: %s\n", animName.c_str());
+        // printf("Loaded animation: %s\n", animName.c_str());
         animation.print();
 
         animations.push_back(animation);

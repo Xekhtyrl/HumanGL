@@ -324,33 +324,33 @@ void HierarchicModel::loadSkeleton(const std::string& path) {
 }
 
 
-void HierarchicModel::computeLocalPivots(
-	std::map<std::string, vml::vec3>& worldPivots
-) {
-	// Convert each pivot to local space (offset from parent's world pivot)
-	for (auto& [name, node] : model.nodes) {
-		if (!node->parent.empty()) {
-			node->pivot = worldPivots[name] - worldPivots[node->parent];
-			node->translation = node->pivot;
-			node->updateLocalMatrix();
+// void HierarchicModel::computeLocalPivots(
+// 	std::map<std::string, vml::vec3>& worldPivots
+// ) {
+// 	// Convert each pivot to local space (offset from parent's world pivot)
+// 	for (auto& [name, node] : model.nodes) {
+// 		if (!node->parent.empty()) {
+// 			node->pivot = worldPivots[name] - worldPivots[node->parent];
+// 			node->translation = node->pivot;
+// 			node->updateLocalMatrix();
 
-			// printf("Node %s local pivot: %f, %f, %f\n", name.c_str(), node->pivot[0], node->pivot[1], node->pivot[2]);
-		}
-	}
-}
+// 			// printf("Node %s local pivot: %f, %f, %f\n", name.c_str(), node->pivot[0], node->pivot[1], node->pivot[2]);
+// 		}
+// 	}
+// }
 
-void HierarchicModel::convertMeshToLocalSpace(
-    std::map<std::string, vml::vec3>& worldPivots)
-{
-    for (auto& [name, node] : model.nodes) {
-        if (!node->mesh) continue;
+// void HierarchicModel::convertMeshToLocalSpace(
+//     std::map<std::string, vml::vec3>& worldPivots)
+// {
+//     for (auto& [name, node] : model.nodes) {
+//         if (!node->mesh) continue;
 
-        vml::vec3 pivotWorld = worldPivots.at(name);
+//         vml::vec3 pivotWorld = worldPivots.at(name);
 
-        for (auto& vertex : node->mesh->vertices()) {
-            vertex.Position -= pivotWorld;
-        }
+//         for (auto& vertex : node->mesh->vertices()) {
+//             vertex.Position -= pivotWorld;
+//         }
 
-        node->mesh->setupMesh(_min, _max - _min);
-    }
-}
+//         node->mesh->setupMesh(_min, _max - _min);
+//     }
+// }

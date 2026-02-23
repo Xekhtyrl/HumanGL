@@ -269,18 +269,9 @@ void changeSetup(GLFWwindow *window, int key, int action) {
 		setup.showLines = false;
 		setup.showColors = false;
 		setup.showPoints = false;
-		setup.applyCustomTexture = false;
 	}
 	if (key == GLFW_KEY_L && action == GLFW_RELEASE){
 		setup.showLines = !setup.showLines;
-		setup.showFaces = false;
-		setup.showColors = false;
-		setup.showPoints = false;
-		setup.applyCustomTexture = false;
-	}
-	if (key == GLFW_KEY_T && action == GLFW_RELEASE){
-		setup.applyCustomTexture = !setup.applyCustomTexture;
-		setup.showLines = false;
 		setup.showFaces = false;
 		setup.showColors = false;
 		setup.showPoints = false;
@@ -290,14 +281,12 @@ void changeSetup(GLFWwindow *window, int key, int action) {
 		setup.showLines = false;
 		setup.showFaces = false;
 		setup.showPoints = false;
-		setup.applyCustomTexture = false;
 	}
 	if (key == GLFW_KEY_P && action == GLFW_RELEASE){
 		setup.showPoints = !setup.showPoints;
 		setup.showLines = false;
 		setup.showFaces = false;
 		setup.showColors = false;
-		setup.applyCustomTexture = false;
 	}
 }
 

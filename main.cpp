@@ -121,50 +121,53 @@ int main(int argc, char **argv)
 		obj = "Ressources/HumanGL.obj";
 	setObjName(obj);
 	std::ofstream log;
+	std::streambuf* coutbuf = std::cout.rdbuf();
 	log.open("err.log");
+	std::cout.rdbuf(log.rdbuf());
 	GLFWwindow* window = initWindow(setup.modelName);
 	if (window == NULL)
 	{
-		log << "Program ended prematurely. Failed to create GLFW window." << std::endl;
+		std::cout << "Program ended prematurely. Failed to create GLFW window." << std::endl;
 		glfwTerminate();
 		log.close();
 		return -1;
 	}
-	log << "Window opened successfully!" << std::endl;
+	std::cout << "Window opened successfully!" << std::endl;
 	glfwMakeContextCurrent(window);
-	log << "Window context created successfully!" << std::endl;
+	std::cout << "Window context created successfully!" << std::endl;
 	
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
-		log << "Program ended prematurely. Failed to initialize GLAD." << std::endl;
+		std::cout << "Program ended prematurely. Failed to initialize GLAD." << std::endl;
 		glfwDestroyWindow(window);
 		glfwTerminate();
 		return -1;
 	}
 	
 	try {
-		log << "Glad loaded successfully" << std::endl;
+		std::cout << "Glad loaded successfully" << std::endl;
 		setupOpenGL(window);
-		log << "OpenGL setuped" << std::endl;
+		std::cout << "OpenGL setuped" << std::endl;
 
 		Shader shad("ShadersFiles/FinalVertexTexShad.glsl", "ShadersFiles/FinalFragTexShad.glsl");
-		log << "Shader created Successfully" << std::endl;
+		std::cout << "Shader created Successfully" << std::endl;
 		// Create Model here
 		IModel *object = new HierarchicModel(obj.c_str());
 	
-		log << "Model created Successfully" << std::endl;
+		std::cout << "Model created Successfully" << std::endl;
 		AnimManager animManager;
 		animManager.anims = loadAnimations("Ressources/Movement.json");
 		setBaseModelMatrix(window, object);
 		renderLoop(window, shad, object, animManager);
 	}
 	catch(std::exception& e){
-		log << "Exception catched: " << e.what() << std::endl;
+		std::cout << "Exception catched: " << e.what() << std::endl;
 		cleanProgram(window);
 		return -1;
 	}
 	cleanProgram(window);
-	log << "program closed without error or exception" << std::endl;
+	std::cout << "program closed without error or exception" << std::endl;
+	std::cout.rdbuf(coutbuf);
 	log.close();
 	return 0;
 }

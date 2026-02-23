@@ -35,7 +35,6 @@ struct Material {
 
 struct Setup {
 
-	bool applyCustomTexture = false;
 	bool showFaces = false;
 	bool showLines = false;
 	bool showColors = false;

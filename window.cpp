@@ -17,7 +17,7 @@ GLFWwindow* initWindow(std::string name) {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	return glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, name.size() > 0 ? name.c_str() : "Scop42", NULL, NULL);
+	return glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, name.size() > 0 ? name.c_str() : "HumanGL", NULL, NULL);
 }
 
 /**
@@ -43,7 +43,6 @@ void legendUI() {
 	ImGui::Checkbox("Show Faces (F)", &setup.showFaces);
 	ImGui::Checkbox("Show Lines (L)", &setup.showLines);
 	ImGui::Checkbox("Show Points (P)", &setup.showPoints);
-	ImGui::Checkbox("Custom Texture (T)", &setup.applyCustomTexture);
 
 	ImGui::Text("\nLegend:\n\n");
 	ImGui::Text("Light Settings:\n");
@@ -84,11 +83,8 @@ void applyNewScaleToSelectedParts(HierarchicModel* model, float scaleFactor) {
 		if (node && node->selected) {
 			node->scale *= scaleFactor;
 			node->updateLocalMatrix();
-			// Draw
-			updateNodeWorldMatrixModel(model, model->getNode("torso"));
 
-			printf("New scale for %s: %f, %f, %f\n", partName.c_str(), node->scale[0], node->scale[1], node->scale[2]);
-			// node->globalTransform *= vml::scale(vec3{scaleFactor, scaleFactor, scaleFactor});
+			updateNodeWorldMatrixModel(model, model->getNode("torso"));
 		}
 	}
 }
@@ -110,7 +106,7 @@ void bodyPartUI(IModel* object) {
 	ImGui::ColorEdit3("Part Color", color);
 	applyNewColorToSelectedParts(hierModel, color);
 	static double scaleFactor = 1.0f;
-	ImGui::Text("Scale: %.3f", scaleFactor);
+	ImGui::Text("Scale selected parts:");
 
 	if (ImGui::Button("-"))
 	{

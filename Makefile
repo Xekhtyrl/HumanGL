@@ -1,4 +1,4 @@
-NAME = Scop
+NAME = HumanGL
 
 INC = ./Includes
 HOME_LIB  = $(HOME)/.local/lib
@@ -6,14 +6,6 @@ HOME_INC  = $(HOME)/.local/include
 DIR_OBJ = Obj/
 
 IMGUI_DIR = $(INC)/imgui
-
-IMGUI_SRCS = \
-    $(IMGUI_DIR)/imgui.cpp \
-    $(IMGUI_DIR)/imgui_draw.cpp \
-    $(IMGUI_DIR)/imgui_widgets.cpp \
-    $(IMGUI_DIR)/imgui_tables.cpp \
-    $(IMGUI_DIR)/imgui_impl_glfw.cpp \
-    $(IMGUI_DIR)/imgui_impl_opengl3.cpp
 
 SRCS =	main.cpp \
 		Controls.cpp \
@@ -34,10 +26,10 @@ SRCC = glad.c
 OBJ = $(addprefix $(DIR_OBJ), $(SRCS:.cpp=.o))
 OBJ += $(addprefix $(DIR_OBJ), $(SRCC:.c=.o))
 
-CXX       := c++
+CXX       := g++
 CC        := gcc
 
-CXXFLAGS  = -std=c++20 -Wall -Wextra -Werror -g3 -fsanitize=address
+CXXFLAGS  = -std=c++20 -Wall -Wextra -Werror -g
 CFLAGS    = -Wall -Wextra -Werror -g
 
 INCLUDES  := -I$(INC) \
@@ -46,6 +38,7 @@ INCLUDES  := -I$(INC) \
              -I$(HOME_INC)
 
 LIBS      := -L$(HOME_LIB) \
+			 $(IMGUI_DIR)/imgui.a \
              -Wl,-rpath,$(HOME_LIB) \
              -lglfw3 -ldl -lGL -lpthread -lX11
 
