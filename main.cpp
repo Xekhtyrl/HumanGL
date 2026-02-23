@@ -120,19 +120,23 @@ int main(int argc, char **argv)
 	else
 		obj = "Ressources/HumanGL.obj";
 	setObjName(obj);
+
 	std::ofstream log;
 	std::streambuf* coutbuf = std::cout.rdbuf();
 	log.open("err.log");
 	std::cout.rdbuf(log.rdbuf());
+
 	GLFWwindow* window = initWindow(setup.modelName);
 	if (window == NULL)
 	{
 		std::cout << "Program ended prematurely. Failed to create GLFW window." << std::endl;
 		glfwTerminate();
+		std::cout.rdbuf(coutbuf);
 		log.close();
 		return -1;
 	}
 	std::cout << "Window opened successfully!" << std::endl;
+	
 	glfwMakeContextCurrent(window);
 	std::cout << "Window context created successfully!" << std::endl;
 	
@@ -141,6 +145,8 @@ int main(int argc, char **argv)
 		std::cout << "Program ended prematurely. Failed to initialize GLAD." << std::endl;
 		glfwDestroyWindow(window);
 		glfwTerminate();
+		std::cout.rdbuf(coutbuf);
+		log.close();
 		return -1;
 	}
 	
@@ -163,6 +169,8 @@ int main(int argc, char **argv)
 	catch(std::exception& e){
 		std::cout << "Exception catched: " << e.what() << std::endl;
 		cleanProgram(window);
+		std::cout.rdbuf(coutbuf);
+		log.close();
 		return -1;
 	}
 	cleanProgram(window);
