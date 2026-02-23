@@ -19,22 +19,24 @@ void Animation::print() const {
  
 }
 
-
+int convertTimeToFrame(float time) {
+    return static_cast<int>(time * 60);
+}
 
 void Animation::convertToKeyframes(PlayState state, ParseTransitionPose transitionPose) {
-    pl[state].duration = transitionPose.duration;
+    pl[state].duration = convertTimeToFrame(transitionPose.duration);
     for (const auto& [boneName, keyframesList] : transitionPose.tracks) {
         for (const auto& keyframesMap : keyframesList) {
             for (const auto& [time, values] : keyframesMap) {
-                pl[state].keyframes[time][boneName] = values;
+                pl[state].keyframes[convertTimeToFrame(time)][boneName] = values;
             }
         }
     }
-    if (pl[state].keyframes.find(transitionPose.duration) == pl[state].keyframes.end()) {
-        pl[state].keyframes[transitionPose.duration] = {};
+    if (pl[state].keyframes.find(convertTimeToFrame(transitionPose.duration)) == pl[state].keyframes.end()) {
+        pl[state].keyframes[convertTimeToFrame(transitionPose.duration)] = {};
     }
-    if (pl[state].keyframes.find(0.0f) == pl[state].keyframes.end()) {
-        pl[state].keyframes[0.0f] = {};
+    if (pl[state].keyframes.find(0) == pl[state].keyframes.end()) {
+        pl[state].keyframes[0] = {};
     }
 }
 
@@ -65,7 +67,7 @@ void Animation::finishFrame() {
     updateActualPose(currentFrameTime);
 }
 
-void Animation::updateActualPose(float frameTime) {
+void Animation::updateActualPose(int frameTime) {
     auto it = pl[playState].keyframes.find(frameTime);
     if (it != pl[playState].keyframes.end()) {
         // printf("Updating actual pose for frame time: %f\n", frameTime);
@@ -76,10 +78,10 @@ void Animation::updateActualPose(float frameTime) {
     }
 }
 
-void Animation::update(float deltaTime) {
+void Animation::update() {
     if (playState == PlayState::STOPPED) return;
 
-    currentTime += deltaTime;
+    currentTime += 1;
 
     if (currentTime >= pl[playState].duration) {
         finishFrame();
@@ -104,5 +106,21 @@ void Animation::update(float deltaTime) {
     if (currentTime >= nextIt->first) {
         updateActualPose(nextIt->first);
         currentFrameTime = nextIt->first;
+    }
+}
+
+void AnimManager::changeAnim(int index) {
+     if (index < 0 || index >= static_cast<int>(anims.size())) {
+        std::cerr << "Invalid animation index: " << index << std::endl;
+        return;
+    }
+    if (currentAnim == index) {
+        anims[index].flipflop();
+        return;
+    }
+    else if (currentAnim == -1)
+    {
+        currentAnim = index;
+        anims[index].flipflop();
     }
 }

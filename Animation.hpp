@@ -29,17 +29,25 @@ struct Animation {
 
     PlayState playState = PlayState::STOPPED;
     PlayState nextState;
-    float currentTime = 0.0f;
-    float currentFrameTime = 0.0f;
+    float currentTime = 0;
+    float currentFrameTime = 0;
     std::map<float, std::map<std::string, vec3>> currentKeyframes;
     
     void convertToKeyframes(PlayState state, ParseTransitionPose transitionPose);
     void print() const;
     void finishFrame();
-    void updateActualPose(float frameTime);
+    void updateActualPose(int frameTime);
 
     void flipflop();
-    void update(float deltaTime);
+    void update();
+};
+
+struct AnimManager
+{
+    std::vector<Animation> anims;
+    int currentAnim = -1;
+
+    void changeAnim(int index);
 };
 
 #endif
