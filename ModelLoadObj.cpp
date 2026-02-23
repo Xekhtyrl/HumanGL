@@ -233,8 +233,6 @@ void HierarchicModel::loadModel(std::string path) {
 		for (auto& [name, node] : model.nodes) {
 			worldPivots[name] = node->pivot;
 		}
-	convertMeshToLocalSpace(worldPivots);
-	computeLocalPivots(worldPivots);
 	updateNodeWorldMatrixModel(this, getNode("torso"));
 }
 
