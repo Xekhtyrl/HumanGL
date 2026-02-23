@@ -42,14 +42,14 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
  * @param window glfw window pointer.
  * @param shader shader class needed beforehand to draw the meshes with and send update to the program on the model.
  */
-void renderLoop(GLFWwindow *window, Shader& shader, IModel* object, std::vector<Animation> *anims) {
+void renderLoop(GLFWwindow *window, Shader& shader, IModel* object, AnimManager& animManager) {
 
 	while(!glfwWindowShouldClose(window))
 	{
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
-		processInput(window, object, anims);
+		processInput(window, object, animManager);
 		// Set the clear color (RGBA)
 		glClearColor(0.75, 0.75f, 0.6f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -153,9 +153,10 @@ int main(int argc, char **argv)
 		IModel *object = new HierarchicModel(obj.c_str());
 	
 		log << "Model created Successfully" << std::endl;
-		std::vector<Animation> anims = loadAnimations("Ressources/Movement.json");
+		AnimManager animManager;
+		animManager.anims = loadAnimations("Ressources/Movement.json");
 		setBaseModelMatrix(window, object);
-		renderLoop(window, shad, object, &anims);
+		renderLoop(window, shad, object, animManager);
 	}
 	catch(std::exception& e){
 		log << "Exception catched: " << e.what() << std::endl;

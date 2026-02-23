@@ -9,7 +9,7 @@
  * @brief main function that regroup and process all inputs (functions)
  * @param window glfw window pointer
  */
-void processInput(GLFWwindow *window, IModel *object, std::vector<Animation> *anims)
+void processInput(GLFWwindow *window, IModel *object, AnimManager &anims)
 {
 
 	animate(window, object, anims);
@@ -150,41 +150,41 @@ void rotationKey(GLFWwindow *window){
 	}
 }
 
-void animate(GLFWwindow *window, IModel *object, std::vector<Animation> *anims) {
+void animate(GLFWwindow *window, IModel *object, AnimManager &anims) {
 	HierarchicModel* modelPtr = dynamic_cast<HierarchicModel*>(object);
-	if (!modelPtr || anims->empty())
+	if (!modelPtr || anims.anims.empty())
 		return;
 
 	// Use first animation for now (can be extended to select animation)
 	// Animation* anim = &(*anims)[0];
-
-	for (auto& anim : *anims)
-	{
-		if (anim.playState != PlayState::STOPPED) {
-			anim.update(deltaTime);
-			if (anim.playState == PlayState::STOPPED) {
+	if (anims.currentAnim != -1) {
+		Animation* anim = &anims.anims[anims.currentAnim];
+		if (anim->playState != PlayState::STOPPED) {
+			anim->update();
+			if (anim->playState == PlayState::STOPPED) {
 				modelPtr->resetModel();
-				printf("Animation %s stopped and bones reset.\n", anim.state.c_str());
+				anims.currentAnim = -1;
 			}
 			else {
-				for (const auto& [boneName, values] : anim.actualPose) {
-					// printf("Applying actual pose to bone: %s with values (%f, %f, %f)\n", boneName.c_str(), values[0], values[1], values[2]);
+				for (const auto& [boneName, values] : anim->actualPose) {
 					MNode* bone = modelPtr->getNode(boneName);
 					rotateNode(bone, values);
 				}
 			}
 			updateNodeWorldMatrixModel(object, modelPtr->getNode("torso"));
-			break;
 		}
 	}
 	if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS){
-		anims->at(0).flipflop();
+		anims.changeAnim(0);
 	}
 	if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS){
-		anims->at(1).flipflop();
+		anims.changeAnim(1);
 	}
 	if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS){
-		anims->at(2).flipflop();
+		anims.changeAnim(2);
+	}
+	if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS){
+		anims.changeAnim(3);
 	}
 }
 
