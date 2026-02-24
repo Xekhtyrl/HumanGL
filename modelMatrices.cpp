@@ -4,6 +4,22 @@ extern unsigned int SCR_WIDTH;
 extern unsigned int SCR_HEIGHT;
 
 
+// a simple function to reset the model matrix of each node of the model to identity and the scale to 1
+// and the translation to 0 (useful for reset and to set the base model matrix)
+// can be improved (maybe stop any animation and then also reset the rotation)
+void resetModelMatrix(IModel* object) {
+	HierarchicModel* modelPtr = dynamic_cast<HierarchicModel*>(object);
+	if (!modelPtr)
+		return;
+	for (auto& nodePair : modelPtr->getModel().nodes) {
+		nodePair.second->translation = {0, 0, 0};
+		nodePair.second->scale = {1, 1, 1};
+		nodePair.second->localMatrix = identity<float, 4>();
+		nodePair.second->worldMatrix = identity<float, 4>();
+		nodePair.second->updateLocalMatrix();
+	}
+}
+
 /**
  * @brief set model matrix to resize and recenter the model base to fit correctly
  * @param window glfw window pointer
@@ -30,6 +46,7 @@ void setBaseModelMatrix(GLFWwindow* window, IModel* object) {
 	// (void)normalizedCenter4; // avoid unused variable warning
 	center = vec3({normalizedCenter4[0], normalizedCenter4[1], normalizedCenter4[2]});
 	camera.resetCamera(window);
+	resetModelMatrix(object);
 }
 
 /**
