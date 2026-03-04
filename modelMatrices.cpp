@@ -13,6 +13,7 @@ void resetNodesMatrix(IModel* object) {
 		return;
 	for (auto& nodePair : modelPtr->getModel().nodes) {
 		nodePair.second->translation = {0, 0, 0};
+		nodePair.second->rotation = {0, 0, 0};
 		nodePair.second->scale = {1, 1, 1};
 		nodePair.second->localMatrix = identity<float, 4>();
 		nodePair.second->worldMatrix = identity<float, 4>();
@@ -24,7 +25,8 @@ void resetNodesMatrix(IModel* object) {
  * @brief set model matrix to resize and recenter the model base to fit correctly
  * @param window glfw window pointer
  */
-void setBaseModelMatrix(GLFWwindow* window, IModel* object) {
+void setBaseModelMatrix(GLFWwindow* window, IModel* object, AnimManager &anims) {
+	anims.resetAll();
 	model = identity<float,4>();
 
 	vec3 rawMin = object->min();

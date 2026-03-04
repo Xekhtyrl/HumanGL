@@ -109,6 +109,15 @@ void Animation::update() {
     }
 }
 
+void Animation::resetAll() {
+    playState = PlayState::STOPPED;
+    nextState = PlayState::STOPPED;
+    currentFrameTime = 0;
+    actualPose = {};
+    // updateActualPose(currentFrameTime);
+    currentTime = 0;
+}
+
 void AnimManager::changeAnim(int index) {
      if (index < 0 || index >= static_cast<int>(anims.size())) {
         std::cerr << "Invalid animation index: " << index << std::endl;
@@ -122,5 +131,12 @@ void AnimManager::changeAnim(int index) {
     {
         currentAnim = index;
         anims[index].flipflop();
+    }
+}
+
+void AnimManager::resetAll() {
+    if (currentAnim >= 0) {
+        anims[currentAnim].resetAll();
+        currentAnim = -1;
     }
 }

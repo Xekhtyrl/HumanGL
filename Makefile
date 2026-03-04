@@ -40,6 +40,7 @@ INCLUDES  := -I$(INC) \
 LIBS      := -L$(HOME_LIB) \
 			 $(IMGUI_DIR)/imgui.a \
              -Wl,-rpath,$(HOME_LIB) \
+			 -L$(INC)/glfw-3.4/build/src \
              -lglfw3 -ldl -lGL -lpthread -lX11
 
 all: $(NAME)

@@ -40,6 +40,7 @@ struct Animation {
 
     void flipflop();
     void update();
+    void resetAll();
 };
 
 struct AnimManager
@@ -48,6 +49,7 @@ struct AnimManager
     int currentAnim = -1;
 
     void changeAnim(int index);
+    void resetAll();
 };
 
 #endif

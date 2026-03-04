@@ -48,11 +48,11 @@ extern vml::vec3 center;
 
 #include "../Camera.hpp"
 //modelMatrices.cpp
-void setBaseModelMatrix(GLFWwindow *window, IModel* object);
+void setBaseModelMatrix(GLFWwindow *window, IModel* object, AnimManager &anims);
 void defineMatrices(Shader& shad);
 
 //controls.cpp
-void scaleAndResetKey(GLFWwindow *window, IModel* object);
+void scaleAndResetKey(GLFWwindow *window, IModel* object, AnimManager &anims);
 void rotationKey(GLFWwindow *window);
 void animate(GLFWwindow *window, IModel *object, AnimManager& animManager);
 void rotateNode(MNode* node, vec3 angles);

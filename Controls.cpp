@@ -25,7 +25,7 @@ void processInput(GLFWwindow *window, IModel *object, AnimManager &anims)
 		camera.ProcessKeyboard(RIGHT, deltaTime);
 	rotationKey(window);
 	translationKey(window);
-	scaleAndResetKey(window, object);
+	scaleAndResetKey(window, object, anims);
 	changeLightSettings(window);
 }
 
@@ -186,6 +186,18 @@ void animate(GLFWwindow *window, IModel *object, AnimManager &anims) {
 	if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS){
 		anims.changeAnim(3);
 	}
+	if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS){
+		anims.changeAnim(4);
+	}
+	if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS){
+		anims.changeAnim(5);
+	}
+	if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS){
+		anims.changeAnim(6);
+	}
+	if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS){
+		anims.changeAnim(7);
+	}
 }
 
 /**
@@ -223,7 +235,7 @@ void translationKey(GLFWwindow *window) {
  * @brief input linked to scale of model and reset
  * @param window glfw window pointer
  */
-void scaleAndResetKey(GLFWwindow *window, IModel *object) {
+void scaleAndResetKey(GLFWwindow *window, IModel *object, AnimManager &anims) {
 	if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS){
 		model *= scale(vec3{0.9,0.9,0.9});
 		// vec3 positionToCenter = vec3{0, 0, 0} - model.scale
@@ -236,7 +248,7 @@ void scaleAndResetKey(GLFWwindow *window, IModel *object) {
 		setup.scaleFactor *= 10. / 9.;
 	}
 	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS){
-		setBaseModelMatrix(window, object);
+		setBaseModelMatrix(window, object, anims);
 	}
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS){
 		HierarchicModel* modelPtr = dynamic_cast<HierarchicModel*>(object);

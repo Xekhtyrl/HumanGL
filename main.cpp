@@ -163,7 +163,7 @@ int main(int argc, char **argv)
 		std::cout << "Model created Successfully" << std::endl;
 		AnimManager animManager;
 		animManager.anims = loadAnimations("Ressources/Movement.json");
-		setBaseModelMatrix(window, object);
+		setBaseModelMatrix(window, object, animManager);
 		renderLoop(window, shad, object, animManager);
 	}
 	catch(std::exception& e){

@@ -58,6 +58,10 @@ void legendUI() {
 	ImGui::Text("\tTranslation Y: NUM2, NUM8\n");
 	ImGui::Text("\tTranslation X: NUM4, NUM6\n");
 	ImGui::Text("\tTranslation Z: NUM1, NUM9\n");
+
+	ImGui::Text("\nAnimation : ");
+	ImGui::Text("\tWalk: H, run : J, jump : K, danse : O");
+	ImGui::Text("\tOctopus: B, dabe : N, hélico : U, kaos : I");
 	ImGui::Text("\nCamera Controls:\n");
 	ImGui::Text("\tMouse, A, W, S, D\n");
 	
