@@ -2,10 +2,6 @@
 #include <fstream>
 #include <iomanip>
 #include <string>
-// #include <boost/json/src.hpp>
-// #include <iostream>
-
-// namespace json = boost::json;
 
 /// @brief trim string ref driectly in place of set of charachter 
 /// @param str string to trim
@@ -32,7 +28,10 @@ std::string fileToStr(const std::string& filePath) {
     return ss.str();
 }
 
-// json::value parseJsonFile(const std::string& path) {
-// 	std::string file = fileToStr(path);
-// 	return boost::json::parse(file);
-// }
+bool validFileName(std::string file, std::string extension) {
+	if (file.size() <= extension.size())
+		return false;
+	if (file.find_last_of(extension) != file.size() - 1)
+		return false;
+	return true;
+}

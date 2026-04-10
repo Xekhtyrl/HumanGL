@@ -13,6 +13,7 @@
 //utils.cpp
 void strTrim(std::string& str, std::string arr = " \t\r\n");
 std::string fileToStr(const std::string& filePath);
+bool validFileName(std::string file, std::string extension);
 // json::value parseJsonFile(const std::string& path);
 
 #include "struct.hpp"
@@ -73,3 +74,4 @@ void createUIImgui(IModel* object);
 
 //animation.cpp
 std::vector<Animation> loadAnimations(const std::string& filepath);
+size_t findMatchingBrace(const std::string& content, size_t openBrace) ;

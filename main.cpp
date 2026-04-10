@@ -114,11 +114,16 @@ void setObjName(std::string arg) {
 
 int main(int argc, char **argv)
 {
+	IModel *object = nullptr;
 	std::string obj;
 	if (argc == 2)
 		obj = argv[1];
 	else
 		obj = "Ressources/HumanGL.obj";
+	if (!validFileName(obj, ".obj")) {
+		std::cout << "File Name Not Valid" << std::endl;
+		return -1;
+	}
 	setObjName(obj);
 
 	std::ofstream log;
@@ -158,7 +163,7 @@ int main(int argc, char **argv)
 		Shader shad("ShadersFiles/FinalVertexTexShad.glsl", "ShadersFiles/FinalFragTexShad.glsl");
 		std::cout << "Shader created Successfully" << std::endl;
 		// Create Model here
-		IModel *object = new HierarchicModel(obj.c_str());
+		object = new HierarchicModel(obj.c_str());
 	
 		std::cout << "Model created Successfully" << std::endl;
 		AnimManager animManager;
@@ -168,12 +173,15 @@ int main(int argc, char **argv)
 	}
 	catch(std::exception& e){
 		std::cout << "Exception catched: " << e.what() << std::endl;
+		if (object)
+			delete object;
 		cleanProgram(window);
 		std::cout.rdbuf(coutbuf);
 		log.close();
 		return -1;
 	}
 	cleanProgram(window);
+	delete object;
 	std::cout << "program closed without error or exception" << std::endl;
 	std::cout.rdbuf(coutbuf);
 	log.close();

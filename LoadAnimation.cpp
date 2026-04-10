@@ -78,7 +78,7 @@ static float parseDurationInSection(const std::string& sectionStr) {
     return std::stof(sectionStr.substr(numStart, numEnd - numStart));
 }
 
-static size_t findMatchingBrace(const std::string& content, size_t openBrace) {
+size_t findMatchingBrace(const std::string& content, size_t openBrace) {
     int depth = 1;
     size_t pos = openBrace + 1;
     while (pos < content.size() && depth > 0) {

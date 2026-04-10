@@ -35,17 +35,6 @@ HierarchicModel& HierarchicModel::operator=(const HierarchicModel& oth) {
 
 /// @brief Model destructor: destroy and clean all thing related to the Model (Textures, Mehes's VAO, VBO, EBO)
 HierarchicModel::~HierarchicModel() {
-	if (!final)
-		return ;
-	// for (auto& it: materials){
-	// 	auto& mat = it.second;
-	// 	if (mat.diffuseTex.id() != 0)
-	// 		mat.diffuseTex.deleteTex();
-	// 	if (mat.specularTex.id() != 0)
-	// 		mat.specularTex.deleteTex();
-	// 	if (mat.normalTex.id() != 0)
-	// 		mat.normalTex.deleteTex();
-	// }
 	for (auto& [key, node]: model.nodes) {
 		Mesh *mesh = node->mesh;
 		if (mesh->VAO())
@@ -54,6 +43,7 @@ HierarchicModel::~HierarchicModel() {
 			glDeleteBuffers(1, &(mesh->VBO()));
 		if (mesh->EBO())
 			glDeleteBuffers(1, &(mesh->EBO()));
+		delete mesh;
 	}
 }
 

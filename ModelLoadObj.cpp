@@ -263,10 +263,28 @@ void HierarchicModel::checkLink(MStruct& final, MNode* node, std::deque<std::str
 	}
 }
 
+void getJSONBlock(std::string){
+
+}
+
+void HierarchicModel::parseJSONBlock(std::ifstream& file, int bracketLevel = 0) {
+	int openBrakets = bracketLevel;
+	std::string line;
+
+	while (getline(file, line)){
+		std::stringstream ss(line);
+		std::string type;
+		ss >> type;
+		if (type.find("{") != std::string::npos)
+	}
+
+}
+
 void HierarchicModel::loadSkeleton(const std::string& path) {
 	MNode *obj;
 	std::string line;
 	std::ifstream file(directory + path);
+	std::string content((std::istreambuf_iterator<char>(directory + path)), std::istreambuf_iterator<char>());
 	if (!file.is_open())
 		throw std::runtime_error("Error: Could not open " + path);	
 
@@ -302,7 +320,7 @@ void HierarchicModel::loadSkeleton(const std::string& path) {
 			obj->children = arr;
 		}
 		else {
-			strTrim(type, ":\"");
+			strTrim(type, ":\"{}");
 			obj = new MNode(type);
 			model.order.push_back(type);
 			model.nodes[type] = obj;
@@ -322,35 +340,3 @@ void HierarchicModel::loadSkeleton(const std::string& path) {
 	checkLink(model, model.nodes[model.order[0]], std::deque<std::string>());
 	// printGraph(final, final.nodes[final.order[0]]);
 }
-
-
-// void HierarchicModel::computeLocalPivots(
-// 	std::map<std::string, vml::vec3>& worldPivots
-// ) {
-// 	// Convert each pivot to local space (offset from parent's world pivot)
-// 	for (auto& [name, node] : model.nodes) {
-// 		if (!node->parent.empty()) {
-// 			node->pivot = worldPivots[name] - worldPivots[node->parent];
-// 			node->translation = node->pivot;
-// 			node->updateLocalMatrix();
-
-// 			// printf("Node %s local pivot: %f, %f, %f\n", name.c_str(), node->pivot[0], node->pivot[1], node->pivot[2]);
-// 		}
-// 	}
-// }
-
-// void HierarchicModel::convertMeshToLocalSpace(
-//     std::map<std::string, vml::vec3>& worldPivots)
-// {
-//     for (auto& [name, node] : model.nodes) {
-//         if (!node->mesh) continue;
-
-//         vml::vec3 pivotWorld = worldPivots.at(name);
-
-//         for (auto& vertex : node->mesh->vertices()) {
-//             vertex.Position -= pivotWorld;
-//         }
-
-//         node->mesh->setupMesh(_min, _max - _min);
-//     }
-// }

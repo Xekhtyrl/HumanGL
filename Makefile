@@ -29,7 +29,7 @@ OBJ += $(addprefix $(DIR_OBJ), $(SRCC:.c=.o))
 CXX       := g++
 CC        := gcc
 
-CXXFLAGS  = -std=c++20 -Wall -Wextra -Werror -g
+CXXFLAGS  = -std=c++20 -Wall -Wextra -Werror -g -fsanitize=address
 CFLAGS    = -Wall -Wextra -Werror -g
 
 INCLUDES  := -I$(INC) \
@@ -45,7 +45,7 @@ LIBS      := -L$(HOME_LIB) \
 
 all: $(NAME)
 
-$(NAME): $(OBJ)
+$(NAME):  imgui $(OBJ)
 	make openGL
 	$(CXX) $(CXXFLAGS) $(OBJ) $(LIBS) -o $@
 
@@ -73,15 +73,20 @@ openGL:
 	$(info build folder already exists)
 endif
 
+imgui:
+	make -C $(IMGUI_DIR)
+
 clean:
+	make -C $(IMGUI_DIR) clean
 	rm -rf $(DIR_OBJ)
 
 fclean: clean
+	make -C $(IMGUI_DIR) fclean
 	rm -f $(NAME)
 	rm -f imgui.ini
 	rm -f err.log
 
-cclean: fclean closeGL
+cclean: fclean closeGL 
 
 closeGL:
 	rm -rf $(INC)/glfw-3.4/build
