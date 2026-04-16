@@ -6,6 +6,8 @@ HOME_INC  = $(HOME)/.local/include
 DIR_OBJ = Obj/
 
 IMGUI_DIR = $(INC)/imgui
+JSON_DIR = $(INC)/jsonParser
+JSON_SRCS = $(JSON_DIR)/JSONUtils.cpp
 
 SRCS =	main.cpp \
 		Controls.cpp \
@@ -19,8 +21,8 @@ SRCS =	main.cpp \
 		Mesh.cpp \
 		rotateNode.cpp \
 		LoadAnimation.cpp \
-		Animation.cpp \
-		$(IMGUI_SRCS)
+		Animation.cpp	\
+		$(JSON_SRCS)
 SRCC = glad.c
 
 OBJ = $(addprefix $(DIR_OBJ), $(SRCS:.cpp=.o))
@@ -35,6 +37,7 @@ CFLAGS    = -Wall -Wextra -Werror -g
 INCLUDES  := -I$(INC) \
 			 -I$(INC)/imgui \
              -I$(INC)/glad/include \
+			 -I$(INC)/jsonParser \
              -I$(HOME_INC)
 
 LIBS      := -L$(HOME_LIB) \
@@ -45,8 +48,9 @@ LIBS      := -L$(HOME_LIB) \
 
 all: $(NAME)
 
-$(NAME):  imgui $(OBJ)
+$(NAME): $(OBJ)
 	make openGL
+	make imgui
 	$(CXX) $(CXXFLAGS) $(OBJ) $(LIBS) -o $@
 
 # Compile .cpp source files

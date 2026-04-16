@@ -263,31 +263,45 @@ void HierarchicModel::checkLink(MStruct& final, MNode* node, std::deque<std::str
 	}
 }
 
-void getJSONBlock(std::string){
+void HierarchicModel::loadSkeleton(const std::string& path) {
+	std::string jsonStr = JSONToString(directory + path);
+	JSONParser parser(jsonStr);
+	JSONValue json = parser.parseJSON();
 
-}
-
-void HierarchicModel::parseJSONBlock(std::ifstream& file, int bracketLevel = 0) {
-	int openBrakets = bracketLevel;
-	std::string line;
-
-	while (getline(file, line)){
-		std::stringstream ss(line);
-		std::string type;
-		ss >> type;
-		if (type.find("{") != std::string::npos)
+	for (auto it = json.begin(); it != json.end(); it++){
+		std::string nodeName = it->first;
+		MNode* node = new MNode(nodeName);
+		if (it->second.findKey("pivot")){
+			std::vector<JSONValue> pivotVals = (it->second["pivot"].getValue<std::vector<JSONValue>>());
+			node->pivot = vec3({((float)pivotVals[0].getValue<double>()), ((float)pivotVals[1].getValue<double>()), ((float)pivotVals[2].getValue<double>())});
+		}
+		if (it->second.findKey("children")) {
+			for (auto& child : it->second["children"].getValue<std::vector<JSONValue>>()) {
+				node->children.push_back(child.getValue<std::string>());
+			}
+		}
+		model.nodes[nodeName] = node;
+		model.order.push_back(nodeName);
 	}
 
+	for (auto& nodeEntry : model.nodes) {
+		MNode* node = nodeEntry.second;
+		for (const auto& childName : node->children) {
+			if (model.nodes.count(childName) > 0) {
+				model.nodes[childName]->parent = node->name;
+			}
+		}
+	}
+
+	checkLink(model, model.nodes[model.order[0]], std::deque<std::string>());
 }
 
-void HierarchicModel::loadSkeleton(const std::string& path) {
+
+/* void HierarchicModel::loadSkeleton(const std::string& path) {
 	MNode *obj;
 	std::string line;
 	std::ifstream file(directory + path);
-	std::string content((std::istreambuf_iterator<char>(directory + path)), std::istreambuf_iterator<char>());
-	if (!file.is_open())
-		throw std::runtime_error("Error: Could not open " + path);	
-
+	// std::string content = JSONToString(directory + path);
 	while (getline(file, line)) {
 		std::stringstream ss(line);
 		std::string type;
@@ -340,3 +354,4 @@ void HierarchicModel::loadSkeleton(const std::string& path) {
 	checkLink(model, model.nodes[model.order[0]], std::deque<std::string>());
 	// printGraph(final, final.nodes[final.order[0]]);
 }
+  */

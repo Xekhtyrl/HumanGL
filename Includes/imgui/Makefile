@@ -13,6 +13,15 @@ OBJ = $(addprefix $(DIR_OBJ), $(SRCS:.cpp=.o))
 CC        := g++
 CFLAGS    = -Wall -Wextra -Werror -g -std=c++20
 
+HOME_INC  = $(HOME)/.local/include
+HOME_LIB  = $(HOME)/.local/lib
+INC	   = ../Includes
+
+INCLUDES  := -I$(INC) \
+			 -I$(INC)/imgui \
+             -I$(INC)/glad/include \
+             -I$(HOME_INC)
+
 all: $(NAME)
 
 $(NAME): $(OBJ)
@@ -21,7 +30,7 @@ $(NAME): $(OBJ)
 # Compile .c source files
 $(DIR_OBJ)%.o: %.cpp
 	mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 
 clean:

@@ -8,13 +8,12 @@
 #include <cmath>
 #include "vml.hpp"
 
-// namespace json = boost::json;
+#include "jsonParser/JSONParser.hpp"
 
 //utils.cpp
 void strTrim(std::string& str, std::string arr = " \t\r\n");
 std::string fileToStr(const std::string& filePath);
 bool validFileName(std::string file, std::string extension);
-// json::value parseJsonFile(const std::string& path);
 
 #include "struct.hpp"
 #include "../Shader.hpp"
