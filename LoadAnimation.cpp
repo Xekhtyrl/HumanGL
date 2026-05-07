@@ -109,6 +109,10 @@ static ParseTransitionPose parseTransitionPose(const std::string& content, const
 
 std::vector<Animation> loadAnimations(const std::string& filepath) {
     std::ifstream file(filepath);
+    if (!file.is_open()) {
+        std::cerr << "Failed to open animation file: " << filepath << std::endl;
+        throw std::runtime_error("Failed to open animation file");
+    }
     std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 
     std::vector<Animation> animations;
