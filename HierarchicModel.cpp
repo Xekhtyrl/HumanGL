@@ -35,14 +35,19 @@ HierarchicModel& HierarchicModel::operator=(const HierarchicModel& oth) {
 
 /// @brief Model destructor: destroy and clean all thing related to the Model (Textures, Mehes's VAO, VBO, EBO)
 HierarchicModel::~HierarchicModel() {
+
 	for (auto& [key, node]: model.nodes) {
 		Mesh *mesh = node->mesh;
-		if (mesh->VAO())
+		if (mesh->VAO()) {
 			glDeleteVertexArrays(1, &(mesh->VAO()));
-		if (mesh->VBO())
+			mesh->VAO() = 0;
+		}
+		if (mesh->VBO()) {
 			glDeleteBuffers(1, &(mesh->VBO()));
-		if (mesh->EBO())
+		}
+		if (mesh->EBO()) {
 			glDeleteBuffers(1, &(mesh->EBO()));
+		}
 		delete mesh;
 	}
 }

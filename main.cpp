@@ -173,15 +173,20 @@ int main(int argc, char **argv)
 	}
 	catch(std::exception& e){
 		std::cout << "Exception catched: " << e.what() << std::endl;
-		if (object)
+		if (object){
 			delete object;
+			object = nullptr;
+		}
 		cleanProgram(window);
 		std::cout.rdbuf(coutbuf);
 		log.close();
 		return -1;
 	}
-	cleanProgram(window);
-	delete object;
+	if (object){
+		delete object;
+		object = nullptr;
+	}
+		cleanProgram(window);
 	std::cout << "program closed without error or exception" << std::endl;
 	std::cout.rdbuf(coutbuf);
 	log.close();

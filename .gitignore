@@ -10,3 +10,6 @@ imgui.ini
 Scop
 Obj
 .idea
+Includes/glfw-3.4/build
+Includes/imgui/*.a
+Includes/imgui/Obj

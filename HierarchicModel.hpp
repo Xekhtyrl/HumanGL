@@ -65,6 +65,7 @@ struct ModelStruct {
 	~ModelStruct() {
 		for(auto& [key, value]: nodes)
 			delete value;
+		std::cout << "ModelStruct destroyed." << std::endl;
 	}
 } typedef MStruct;
 
